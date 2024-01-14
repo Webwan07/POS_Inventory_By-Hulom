@@ -1,26 +1,59 @@
 package main;
 import assets.*;
+import database.AppManagement;
+import database.UserManagement;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import javax.swing.ImageIcon;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 @Author("Josuan Leonardo Hulom")
-public final class MainApp extends javax.swing.JFrame {
-
+public final class MainApp extends javax.swing.JFrame implements AppInitializers, ImageManagement{
+    private final UserManagement userManagement = new UserManagement(this);
+    
     public MainApp() {
         Image appIcon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/logo/appLogo.png"));
         this.setIconImage(appIcon);
         
         initComponents();
+        initialize();
         HoverBtn(true);
         
         if (this.getExtendedState() == this.MAXIMIZED_BOTH) {
             this.setExtendedState(this.NORMAL);
         } else {
             this.setExtendedState(this.MAXIMIZED_BOTH);
+        }
+    }
+    
+    @Override
+    public void init_user() {
+        try{
+            String get_id = AppManagement.getCurrentUser(this);
+            String get_image = userManagement.getImagePath(get_id);
+            String get_fname = userManagement.getFName(get_id);
+            String get_lname = userManagement.getLName(get_id);
+            String get_fullname = get_fname + " " + get_lname;
+            String get_username = userManagement.getUName(get_id);
+            String get_gender = userManagement.getGender(get_id);
+            
+            if(get_gender.equals(Helper.listOfGender[0])){
+                genderLabel.setIcon(new ImageIcon("src/icons/male.png"));
+            }else if(get_gender.equals(Helper.listOfGender[1])){
+                genderLabel.setIcon(new ImageIcon("src/icons/female.png"));
+            }else{
+                genderLabel.setIcon(new ImageIcon("src/icons/nogender.png"));
+            }            
+            usernameLabel.setText(get_username);
+            fullnameLabel.setText(Utilities.capitalizeEachWord(get_fullname));
+            setImageToAvatar(imageAvatar1,get_image);  
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -239,11 +272,11 @@ public final class MainApp extends javax.swing.JFrame {
         usersPanel = new customComponents.PanelRound();
         panelRound1 = new customComponents.PanelRound();
         imageAvatar1 = new customComponents.ImageAvatar();
-        jLabel10 = new javax.swing.JLabel();
+        usernameLabel = new javax.swing.JLabel();
         panelRound5 = new customComponents.PanelRound();
         panelRound8 = new customComponents.PanelRound();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        fullnameLabel = new javax.swing.JLabel();
+        genderLabel = new javax.swing.JLabel();
         changeOption = new javax.swing.JComboBox<>();
         jLabel11 = new javax.swing.JLabel();
         inventoryPanel = new customComponents.PanelRound();
@@ -255,6 +288,7 @@ public final class MainApp extends javax.swing.JFrame {
         adminPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         layere1.setLayout(new java.awt.CardLayout());
 
@@ -971,10 +1005,10 @@ public final class MainApp extends javax.swing.JFrame {
         imageAvatar1.setBorderSize(3);
         imageAvatar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/nullProfile.jpg"))); // NOI18N
 
-        jLabel10.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel10.setText("Example Username");
+        usernameLabel.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
+        usernameLabel.setForeground(new java.awt.Color(255, 255, 255));
+        usernameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        usernameLabel.setText("Example Username");
 
         javax.swing.GroupLayout panelRound1Layout = new javax.swing.GroupLayout(panelRound1);
         panelRound1.setLayout(panelRound1Layout);
@@ -986,7 +1020,7 @@ public final class MainApp extends javax.swing.JFrame {
                 .addContainerGap(20, Short.MAX_VALUE))
             .addGroup(panelRound1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(usernameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelRound1Layout.setVerticalGroup(
@@ -995,7 +1029,7 @@ public final class MainApp extends javax.swing.JFrame {
                 .addGap(17, 17, 17)
                 .addComponent(imageAvatar1, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(323, Short.MAX_VALUE))
         );
 
@@ -1011,10 +1045,10 @@ public final class MainApp extends javax.swing.JFrame {
         panelRound8.setRoundTopLeft(25);
         panelRound8.setRoundTopRight(25);
 
-        jLabel8.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("Example Name");
+        fullnameLabel.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
+        fullnameLabel.setForeground(new java.awt.Color(255, 255, 255));
+        fullnameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        fullnameLabel.setText("Example Name");
 
         javax.swing.GroupLayout panelRound8Layout = new javax.swing.GroupLayout(panelRound8);
         panelRound8.setLayout(panelRound8Layout);
@@ -1022,21 +1056,21 @@ public final class MainApp extends javax.swing.JFrame {
             panelRound8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRound8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
+                .addComponent(fullnameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelRound8Layout.setVerticalGroup(
             panelRound8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRound8Layout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addComponent(jLabel8)
+                .addComponent(fullnameLabel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel9.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/nogender.png"))); // NOI18N
+        genderLabel.setFont(new java.awt.Font("Calibri", 0, 24)); // NOI18N
+        genderLabel.setForeground(new java.awt.Color(255, 255, 255));
+        genderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        genderLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/nogender.png"))); // NOI18N
 
         changeOption.setBackground(new java.awt.Color(99, 102, 241));
         changeOption.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
@@ -1058,7 +1092,7 @@ public final class MainApp extends javax.swing.JFrame {
             panelRound5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRound5Layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(genderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelRound5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelRound5Layout.createSequentialGroup()
@@ -1074,7 +1108,7 @@ public final class MainApp extends javax.swing.JFrame {
             .addGroup(panelRound5Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(panelRound5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(genderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(panelRound8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelRound5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1322,16 +1356,86 @@ public final class MainApp extends javax.swing.JFrame {
 
         switch (selectedOption) {
             case "Username":
-                System.out.println("Username changed");
+                String newUsername = JOptionPane.showInputDialog(
+                        this,
+                        "Enter new username:",
+                        "Change Username",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+                
+                if(newUsername != null){
+                    if(Utilities.validateUsername(newUsername)){
+                        System.out.println("Username changed");
+                    }else{
+                        JOptionPane.showMessageDialog(null, """
+                                                            Incorrect username pattern. Please enter a valid username.
+                                                            Username pattern should match: ^[a-zA-Z]+@[0-9]+$""",
+                                "Error", JOptionPane.ERROR_MESSAGE);                       
+                    }
+                }
                 break;
             case "Password":
-                System.out.println("Password changed");
+                String newPassword = JOptionPane.showInputDialog(
+                        this,
+                        "Enter new password:",
+                        "Change Password",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+                String confirmNewPassword = JOptionPane.showInputDialog(
+                        this,
+                        "Confirm new password:",
+                        "Change Password",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+                
+                if(newPassword != null && confirmNewPassword != null){
+                    if(confirmNewPassword.equals(newPassword)){
+                        if(Utilities.validatePassword(confirmNewPassword, this)){
+                            System.out.println("Password changed");
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(this,"New password and confirm password do not match.",
+                                "Password Mismatch",JOptionPane.ERROR_MESSAGE);
+                    }
+                }
                 break;
             case "Firstname":
-                System.out.println("Firstname changed");
+                String newFirstname = JOptionPane.showInputDialog(
+                        this,
+                        "Enter new firstname:",
+                        "Change Firstname",
+                        JOptionPane.PLAIN_MESSAGE
+                ).toLowerCase();
+                
+                if(newFirstname != null){
+                    if(!Utilities.containsNumbers(newFirstname)){
+                        System.out.println("Firstname changed");
+                    }else{
+                        JOptionPane.showMessageDialog(this,
+                            "Error: First name should not contain numbers.",
+                            "Input Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                }
                 break;
             case "Lastname":
-                System.out.println("Lastname changed");
+                String newLastname = JOptionPane.showInputDialog(
+                        this,
+                        "Enter new lastname:",
+                        "Change Lastname",
+                        JOptionPane.PLAIN_MESSAGE
+                ).toLowerCase();
+                
+                if(newLastname != null){
+                    if(!Utilities.containsNumbers(newLastname)){
+                        System.out.println("Lastname changed");
+                    }else{
+                        JOptionPane.showMessageDialog(this,
+                            "Error: Lastname name should not contain numbers.",
+                            "Input Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                }
                 break;
             default:
                 break;
@@ -1346,7 +1450,6 @@ public final class MainApp extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> changeOption;
     private javax.swing.JLayeredPane contentLayere;
     private customComponents.PanelRound d1;
-    private customComponents.PanelRound d2;
     private customComponents.PanelRound d3;
     private customComponents.PanelRound d4;
     private customComponents.PanelRound d5;
@@ -1355,20 +1458,18 @@ public final class MainApp extends javax.swing.JFrame {
     private customComponents.ButtonRound dashboardBtn;
     private customComponents.ButtonRound dashboardBtn1;
     private customComponents.PanelRound dashboardPanel;
-    private customComponents.ImageAvatar imageAvatar1;
+    private javax.swing.JLabel fullnameLabel;
+    private javax.swing.JLabel genderLabel;
+    public static customComponents.ImageAvatar imageAvatar1;
     private customComponents.ButtonRound inventoryBtn;
     private customComponents.PanelRound inventoryPanel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JLayeredPane layere1;
     private customComponents.ButtonRound logoutBtn;
     private customComponents.ButtonRound logoutBtn1;
@@ -1380,7 +1481,6 @@ public final class MainApp extends javax.swing.JFrame {
     private customComponents.PanelRound panelRound11;
     private customComponents.PanelRound panelRound12;
     private customComponents.PanelRound panelRound2;
-    private customComponents.PanelRound panelRound3;
     private customComponents.PanelRound panelRound4;
     private customComponents.PanelRound panelRound5;
     private customComponents.PanelRound panelRound6;
@@ -1403,8 +1503,10 @@ public final class MainApp extends javax.swing.JFrame {
     private javax.swing.JLabel todaysalesLabel;
     private javax.swing.JLabel totalProductsLabel;
     private javax.swing.JLabel totalSalesLabel;
+    private javax.swing.JLabel usernameLabel;
     private customComponents.ButtonRound usersBtn;
     private customComponents.ButtonRound usersBtn1;
     private customComponents.PanelRound usersPanel;
     // End of variables declaration//GEN-END:variables
+
 }

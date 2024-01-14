@@ -15,4 +15,6 @@ public class Helper {
                                                 new Color(30,27,75)}; // 10   
     
     public static Color[] fontColors = new Color[]{new Color(255,255,255)};
+    public static String[] listOfGender = {"Male","Female"};
+    
 }
