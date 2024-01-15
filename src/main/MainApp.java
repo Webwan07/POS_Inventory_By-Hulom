@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 
 @Author("Josuan Leonardo Hulom")
 public final class MainApp extends javax.swing.JFrame implements AppInitializers, ImageManagement{
@@ -90,6 +91,14 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    private static Object get_TableRecordID(JTable tb){
+        try{
+            return tb.getValueAt(tb.getSelectedRow(), 0);
+        }catch(ArrayIndexOutOfBoundsException e){
+            return null;
+        }
+    }  
     
     private void HoverBtn(boolean check){
         if(check){
@@ -1471,11 +1480,16 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, true, true, true, true
+                false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        usersTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                usersTableMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(usersTable);
@@ -1634,6 +1648,85 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         switchPanel(layere1,panel1);
     }//GEN-LAST:event_backLabelMouseClicked
     
+    private boolean changeFname(String newVal, Object id){
+        try{
+            userManagement.updateFname(newVal, id);
+            return true;
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
+    }
+    
+    private void usersTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usersTableMouseClicked
+        int get_selectedColumn = usersTable.getSelectedColumn();
+        
+        Object get_id;
+        String new_val;
+        
+        switch(get_selectedColumn){
+            case 1:
+                get_id = get_TableRecordID(usersTable);
+                new_val = JOptionPane.showInputDialog(this, "Enter new firstname for user "+get_id+":", "Change Firstname", JOptionPane.QUESTION_MESSAGE).toLowerCase();
+                if(new_val != null){
+                    if(!Utilities.containsNumbers(new_val)){
+                        if(changeFname(new_val,get_id)){
+                            JOptionPane.showMessageDialog(this, "Change Successfully", "", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(this, "first name can only contain letters", "", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+                break;
+            case 2:
+                get_id = get_TableRecordID(usersTable);
+                new_val = JOptionPane.showInputDialog(this, "Enter new lastname for user "+get_id+":", "Change Lastname", JOptionPane.QUESTION_MESSAGE);
+                break;
+            case 3:
+                get_id = get_TableRecordID(usersTable);
+                new_val = JOptionPane.showInputDialog(this, "Enter new username for user "+get_id+":", "Change Username", JOptionPane.QUESTION_MESSAGE);
+                break;
+            case 4:
+                get_id = get_TableRecordID(usersTable);
+                new_val = JOptionPane.showInputDialog(this, "Enter new password for user "+get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
+                String confirmPass = JOptionPane.showInputDialog(this, "Confirm new password for user "+get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
+                break;
+            case 5:
+                get_id = get_TableRecordID(usersTable);
+                new_val = JOptionPane.showInputDialog(this, "Enter new birth date for user "+get_id+":", "Change Birth date", JOptionPane.QUESTION_MESSAGE);
+                break;
+            case 6:
+                get_id = get_TableRecordID(usersTable);
+                new_val = (String) JOptionPane.showInputDialog(
+                    null,
+                    "Choose new gender for user " + get_id + ":",
+                    "Change Gender",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    Helper.listOfGender,
+                    Helper.listOfGender[0]);
+                break;
+            case 8:
+                get_id = get_TableRecordID(usersTable);
+                new_val = (String) JOptionPane.showInputDialog(
+                    null,
+                    "Select new user type for user " + get_id + ":",
+                    "Change User type",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    userManagement.listOfUserType,
+                    userManagement.listOfUserType[0]);
+                break;
+            default:
+                break;
+        }
+        try {
+            DbConnection.getInstance().tableData(usersTable, userManagement.table);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_usersTableMouseClicked
+    
     public void backLabelActions(JLabel label,String[] iconName){
         label.addMouseListener(new MouseAdapter(){
             @Override
@@ -1677,7 +1770,6 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private customComponents.PanelRound d5;
     private customComponents.PanelRound d6;
     private customComponents.PanelRound d7;
-    private customComponents.PanelRound d8;
     private customComponents.PanelRound d9;
     private customComponents.ButtonRound dashboardBtn;
     private customComponents.ButtonRound dashboardBtn1;
@@ -1695,7 +1787,6 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
@@ -1718,7 +1809,6 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private customComponents.PanelRound panelRound6;
     private customComponents.PanelRound panelRound7;
     private customComponents.PanelRound panelRound8;
-    private customComponents.PanelRound panelRound9;
     private customComponents.ButtonRound priceListBtn;
     private customComponents.ButtonRound priceListBtn1;
     private customComponents.PanelRound priceListPanel;
