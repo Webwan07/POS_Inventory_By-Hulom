@@ -73,4 +73,23 @@ public class Utilities {
         }
         return capitalizedFullName.toString().trim(); 
     }
+    
+    public static String formatNumber(double number) {
+        String[] suffix = new String[]{"", "k", "M", "B", "T"};
+        int index = 0;
+        while (number >= 1000 && index < suffix.length - 1) {
+            number /= 1000;
+            index++;
+        }
+        return String.format("%.1f%s", number, suffix[index]);
+    }
+    public static String formatNumber(int number) {
+        String[] suffix = new String[]{"", "k", "M", "B", "T"};
+        int index = 0;
+        while (number >= 1000 && index < suffix.length - 1) {
+            number /= 1000;
+            index++;
+        }
+        return String.format("%d%s", number, suffix[index]);        
+    }
 }

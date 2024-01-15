@@ -8,10 +8,12 @@ import javax.swing.JOptionPane;
 @Author("Josuan Leonardo Hulom")
 public class UserManagement extends DbConnection{
     
-    private final String table = "userstable";
+    public final String table = "userstable";
     
     private final String[] columns = {"userId","firstname","lastname","username","password",
         "birthdate","gender","profileImgPath","userType"};
+    
+    public final String[] listOfUserType = {"Admin","Seller"};
     
     private final Component component;
     
@@ -19,25 +21,23 @@ public class UserManagement extends DbConnection{
         this.component = component;
     }
     
-    public boolean checkCurrentUser(String value) {
+    public boolean checkCurrentUser(String value) throws SQLException {
         String query = "SELECT " + columns[0] + " FROM " + table +
                        " WHERE " + columns[0] + " = ?";
-
         try {
             prepare = connection.prepareStatement(query);
             prepare.setString(1, value);
             result = prepare.executeQuery();
 
             if (result.next()) {
-                prepare.close();
                 return true;
             }
-
-            prepare.close();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        }finally{
+            prepare.close();
+            result.close();  
         }
-
         return false;
     }    
     
@@ -52,16 +52,10 @@ public class UserManagement extends DbConnection{
                 String password = result.getString(columns[4]);
 
                 if (u_n.equals(username) && u_p.equals(password)) {
-                    prepare.close();
-                    result.close();
                     return 1;
                 } else if (u_n.equals(username)) {
-                    prepare.close();
-                    result.close();
                     return 2; 
                 } else if (u_p.equals(password)) {
-                    prepare.close();
-                    result.close();
                     return 3; 
                 }
             }
@@ -193,4 +187,23 @@ public class UserManagement extends DbConnection{
         }
         return null;        
     }
+    
+    public String getUserType(String id) throws SQLException{
+        String query = "SELECT "+columns[8]+" FROM "+table+
+                " WHERE "+columns[0]+" = ?";
+        try{
+            prepare = connection.prepareStatement(query);
+            prepare.setString(1, id);
+            result = prepare.executeQuery();
+            if(result.next()){
+                return result.getString(columns[8]);
+            }
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        }finally{
+            prepare.close();
+            result.close();  
+        }
+        return null;        
+    } 
 }

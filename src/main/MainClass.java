@@ -18,16 +18,20 @@ public class MainClass {
         IntelliJTheme.setup(MainApp.class.getResourceAsStream("/theme_eclipse.theme.json"));
         
         if(dbConnection.isDatabaseConnected()){
-            String value = AppManagement.getCurrentUser(new MainApp());
-            boolean checkUser = new UserManagement(new MainApp()).checkCurrentUser(value);
-            
-            java.awt.EventQueue.invokeLater(() -> {
-                if(!checkUser){
-                    new LoginApp().setVisible(true);
-                }else{
-                    new MainApp().setVisible(true);
-                }
-            });
+            try{
+                String value = AppManagement.getCurrentUser(new MainApp());
+                boolean checkUser = new UserManagement(new MainApp()).checkCurrentUser(value);
+
+                java.awt.EventQueue.invokeLater(() -> {
+                    if(!checkUser){
+                        new LoginApp().setVisible(true);
+                    }else{
+                        new MainApp().setVisible(true);
+                    }
+                });
+            }catch(SQLException e){
+                JOptionPane.showMessageDialog(new MainApp(), e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }else{
             JOptionPane.showMessageDialog(null, "Error: No database connected!", "Database Error", JOptionPane.ERROR_MESSAGE);
         }
