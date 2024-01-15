@@ -1658,6 +1658,26 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         return false;
     }
     
+    private boolean changeLname(String newVal, Object id){
+        try{
+            userManagement.updateLname(newVal, id);
+            return true;
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;        
+    }
+    
+    private boolean changeUname(String newVal, Object id){
+        try{
+            userManagement.updateUsername(newVal, id);
+            return true;
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;        
+    }
+    
     private void usersTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usersTableMouseClicked
         int get_selectedColumn = usersTable.getSelectedColumn();
         
@@ -1671,20 +1691,38 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 if(new_val != null){
                     if(!Utilities.containsNumbers(new_val)){
                         if(changeFname(new_val,get_id)){
-                            JOptionPane.showMessageDialog(this, "Change Successfully", "", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(this, "Change Successfully", "Firstname", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }else{
-                        JOptionPane.showMessageDialog(this, "first name can only contain letters", "", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "First name can only contain letters", "Invalid Firstname", JOptionPane.ERROR_MESSAGE);
                     }
                 }
                 break;
             case 2:
                 get_id = get_TableRecordID(usersTable);
                 new_val = JOptionPane.showInputDialog(this, "Enter new lastname for user "+get_id+":", "Change Lastname", JOptionPane.QUESTION_MESSAGE);
+                if(new_val != null){
+                    if(!Utilities.containsNumbers(new_val)){
+                        if(changeLname(new_val,get_id)){
+                            JOptionPane.showMessageDialog(this, "Change Successfully", "Lastname", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(this, "Last name can only contain letters", "Invalid Lastname", JOptionPane.ERROR_MESSAGE);
+                    }
+                }                
                 break;
             case 3:
                 get_id = get_TableRecordID(usersTable);
                 new_val = JOptionPane.showInputDialog(this, "Enter new username for user "+get_id+":", "Change Username", JOptionPane.QUESTION_MESSAGE);
+                if(new_val != null){
+                    if(Utilities.validateUsername(new_val)){
+                        if(changeUname(new_val,get_id)){
+                            JOptionPane.showMessageDialog(this, "Change Successfully", "Username", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }else{
+                        JOptionPane.showMessageDialog(this, "Username must follow the pattern: ^[a-zA-Z]+@[0-9]+$", "Invalid Username", JOptionPane.ERROR_MESSAGE);
+                    }
+                }                   
                 break;
             case 4:
                 get_id = get_TableRecordID(usersTable);
