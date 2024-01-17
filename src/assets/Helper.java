@@ -16,5 +16,5 @@ public class Helper {
     
     public static Color[] fontColors = new Color[]{new Color(255,255,255)};
     public static String[] listOfGender = {"Male","Female"};
-    
+    public static String dateFormat = "yyyy-MM-dd";
 }

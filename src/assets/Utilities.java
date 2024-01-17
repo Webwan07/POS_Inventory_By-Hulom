@@ -1,9 +1,15 @@
 package assets;
 
 import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 
 @Author("Josuan Leonardo Hulom")
 public class Utilities {
@@ -21,32 +27,32 @@ public class Utilities {
         boolean isPhoneNumber = _password.matches("\\d{10}"); 
         
         if (isPhoneNumber) {
-            JOptionPane.showMessageDialog(parentComponent, "You've used a phone number as a password. Please choose a stronger password.");
+            JOptionPane.showMessageDialog(parentComponent, "You've used a phone number as a password. Please choose a stronger password.","",JOptionPane.ERROR_MESSAGE);
             return false;
         }
         if (!matcher.matches()) {
             if (!_password.matches(".*[0-9].*")) {
-                JOptionPane.showMessageDialog(parentComponent, "Password should contain at least one digit.");
+                JOptionPane.showMessageDialog(parentComponent, "Password should contain at least one digit.","",JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             if (!_password.matches(".*[a-z].*")) {
-                JOptionPane.showMessageDialog(parentComponent, "Password should contain at least one lowercase letter.");
+                JOptionPane.showMessageDialog(parentComponent, "Password should contain at least one lowercase letter.","",JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             if (!_password.matches(".*[A-Z].*")) {
-                JOptionPane.showMessageDialog(parentComponent, "Password should contain at least one uppercase letter.");
+                JOptionPane.showMessageDialog(parentComponent, "Password should contain at least one uppercase letter.","",JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             if (!_password.matches(".*[@#$%^&+=].*")) {
-                JOptionPane.showMessageDialog(parentComponent, "Password should contain at least one special character (@#$%^&+=).");
+                JOptionPane.showMessageDialog(parentComponent, "Password should contain at least one special character (@#$%^&+=).","",JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             if (_password.length() < 8) {
-                JOptionPane.showMessageDialog(parentComponent, "Password should be at least 8 characters long.");
+                JOptionPane.showMessageDialog(parentComponent, "Password should be at least 8 characters long.","",JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             if (_password.contains(" ")) {
-                JOptionPane.showMessageDialog(parentComponent, "Password should not contain spaces.");
+                JOptionPane.showMessageDialog(parentComponent, "Password should not contain spaces.","",JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             return false;
@@ -91,5 +97,34 @@ public class Utilities {
             index++;
         }
         return String.format("%d%s", number, suffix[index]);        
+    }
+    
+    public class LandscapePrintable implements Printable {
+        private final JTable table;
+
+        public LandscapePrintable(JTable table) {
+            this.table = table;
+        }
+
+        @Override
+        public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+            if (pageIndex > 0) {
+                return Printable.NO_SUCH_PAGE;
+            }
+
+            Graphics2D g2d = (Graphics2D) graphics;
+            g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+            g2d.rotate(Math.toRadians(90));
+
+            double scaleX = pageFormat.getImageableWidth() / table.getWidth();
+            double scaleY = pageFormat.getImageableHeight() / table.getHeight();
+            double scale = Math.min(scaleX, scaleY);
+
+            g2d.scale(scale, scale);
+
+            table.print(g2d);
+            
+            return Printable.PAGE_EXISTS;
+        }
     }
 }

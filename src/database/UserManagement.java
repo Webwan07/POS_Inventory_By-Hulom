@@ -207,22 +207,8 @@ public class UserManagement extends DbConnection{
         return null;        
     } 
     
-    public void updateFname(String newVal,Object id) throws SQLException{
-        String query = "UPDATE "+table+" SET "+columns[1]+" = ? WHERE "+columns[0]+" = ?";
-        try{
-            prepare = connection.prepareStatement(query);
-            prepare.setString(1, newVal);
-            prepare.setObject(2, id);
-            prepare.executeUpdate();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
-        }finally{
-            prepare.close();
-        }
-    } 
-    
-    public void updateLname(String newVal,Object id) throws SQLException{
-        String query = "UPDATE "+table+" SET "+columns[2]+" = ? WHERE "+columns[0]+" = ?";
+    public void updateStringData(String newVal,Object id,int column_index) throws SQLException{
+        String query = "UPDATE "+table+" SET "+columns[column_index]+" = ? WHERE "+columns[0]+" = ?";
         try{
             prepare = connection.prepareStatement(query);
             prepare.setString(1, newVal);
@@ -235,19 +221,4 @@ public class UserManagement extends DbConnection{
             prepare.close();
         }
     }  
-    
-    public void updateUsername(String newVal,Object id) throws SQLException{
-        String query = "UPDATE "+table+" SET "+columns[3]+" = ? WHERE "+columns[0]+" = ?";
-        try{
-            prepare = connection.prepareStatement(query);
-            prepare.setString(1, newVal);
-            prepare.setObject(2, id);
-            prepare.executeUpdate();
-            prepare.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
-        }finally{
-            prepare.close();
-        }
-    } 
 }
