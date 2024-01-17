@@ -4,22 +4,15 @@ import database.AppManagement;
 import database.DbConnection;
 import database.PurchaseManagement;
 import database.UserManagement;
-import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -53,7 +46,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     @Override
     public void init_table() {
         try {
-            DbConnection.getInstance().tableData(usersTable, userManagement.table);
+            userManagement.tableData(usersTable, userManagement.table);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -363,36 +356,24 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         panelRound13 = new customComponents.PanelRound();
         jScrollPane1 = new javax.swing.JScrollPane();
         usersTable = new javax.swing.JTable();
-        imageAvatar2 = new customComponents.ImageAvatar();
-        panelRound15 = new customComponents.PanelRound();
-        panelRound16 = new customComponents.PanelRound();
-        jLabel23 = new javax.swing.JLabel();
-        fnameInput = new javax.swing.JTextField();
-        jLabel24 = new javax.swing.JLabel();
-        lnameInput = new javax.swing.JTextField();
-        jLabel25 = new javax.swing.JLabel();
-        UnameInput = new javax.swing.JTextField();
-        jLabel26 = new javax.swing.JLabel();
-        jTextField12 = new javax.swing.JTextField();
-        jLabel27 = new javax.swing.JLabel();
-        jTextField13 = new javax.swing.JTextField();
-        jLabel28 = new javax.swing.JLabel();
-        jDateChooser2 = new com.toedter.calendar.JDateChooser();
-        jLabel29 = new javax.swing.JLabel();
-        genderInput1 = new javax.swing.JComboBox<>();
-        userTypeInput1 = new javax.swing.JComboBox<>();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
-        jLabel30 = new javax.swing.JLabel();
-        panelRound9 = new customComponents.PanelRound();
-        jButton4 = new javax.swing.JButton();
-        panelRound14 = new customComponents.PanelRound();
-        panelRound17 = new customComponents.PanelRound();
-        imageAvatar3 = new customComponents.ImageAvatar();
-        idFullname = new javax.swing.JLabel();
-        idUsername = new javax.swing.JLabel();
-        idGender = new javax.swing.JLabel();
-        idUsertype = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        adminFnameInput = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        adminLnameInput = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        adminUnameInput = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
+        adminPasswordInput = new javax.swing.JPasswordField();
+        jLabel13 = new javax.swing.JLabel();
+        adminPasswordInput1 = new javax.swing.JPasswordField();
+        adminBdayInput = new com.toedter.calendar.JDateChooser();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        adminGenderInput = new javax.swing.JComboBox<>();
+        adminUserTypeInput = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
+        addUserBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -1530,357 +1511,169 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 usersTableMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                usersTableMouseEntered(evt);
+            }
         });
         jScrollPane1.setViewportView(usersTable);
 
-        imageAvatar2.setForeground(new java.awt.Color(165, 180, 252));
-        imageAvatar2.setBorderSize(2);
-        imageAvatar2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/nullProfile.jpg"))); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel8.setText("Firstname");
+
+        adminFnameInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        adminFnameInput.setForeground(new java.awt.Color(51, 51, 51));
+
+        jLabel10.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel10.setText("Lastname");
+
+        adminLnameInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        adminLnameInput.setForeground(new java.awt.Color(51, 51, 51));
+
+        jLabel11.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel11.setText("Username");
+
+        adminUnameInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        adminUnameInput.setForeground(new java.awt.Color(51, 51, 51));
+
+        jLabel12.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel12.setText("Password");
+
+        adminPasswordInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        adminPasswordInput.setForeground(new java.awt.Color(51, 51, 51));
+
+        jLabel13.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel13.setText("Confirm Password");
+
+        adminPasswordInput1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        adminPasswordInput1.setForeground(new java.awt.Color(51, 51, 51));
+
+        adminBdayInput.setForeground(new java.awt.Color(51, 51, 51));
+        adminBdayInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+
+        jLabel14.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel14.setText("Birth Date");
+
+        jLabel15.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel15.setText("Gender");
+
+        jLabel16.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel16.setText("User Type");
+
+        adminGenderInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        adminGenderInput.setForeground(new java.awt.Color(51, 51, 51));
+        adminGenderInput.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Male", "Female" }));
+
+        adminUserTypeInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        adminUserTypeInput.setForeground(new java.awt.Color(51, 51, 51));
+        adminUserTypeInput.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Seller" }));
+
+        jButton1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jButton1.setText("Select Image");
+
+        addUserBtn.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        addUserBtn.setText("ADD USER");
+        addUserBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addUserBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelRound13Layout = new javax.swing.GroupLayout(panelRound13);
         panelRound13.setLayout(panelRound13Layout);
         panelRound13Layout.setHorizontalGroup(
             panelRound13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRound13Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1)
-                .addGap(18, 18, 18)
-                .addComponent(imageAvatar2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelRound13Layout.createSequentialGroup()
+                .addGroup(panelRound13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelRound13Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(panelRound13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel14)
+                            .addGroup(panelRound13Layout.createSequentialGroup()
+                                .addComponent(jLabel15)
+                                .addGap(57, 57, 57)
+                                .addComponent(jLabel16))
+                            .addComponent(adminPasswordInput, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(adminUnameInput, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(adminLnameInput, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(adminFnameInput, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel12)
+                            .addComponent(adminBdayInput, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13)
+                            .addComponent(adminPasswordInput1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panelRound13Layout.createSequentialGroup()
+                                .addComponent(adminGenderInput, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(adminUserTypeInput, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(panelRound13Layout.createSequentialGroup()
+                        .addGap(55, 55, 55)
+                        .addGroup(panelRound13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(addUserBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
+                .addContainerGap())
         );
         panelRound13Layout.setVerticalGroup(
             panelRound13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRound13Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .addGroup(panelRound13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelRound13Layout.createSequentialGroup()
+                        .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(adminFnameInput, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(adminLnameInput, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(adminUnameInput, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(adminPasswordInput, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(adminPasswordInput1, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(adminBdayInput, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                        .addGap(9, 9, 9)
+                        .addGroup(panelRound13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelRound13Layout.createSequentialGroup()
+                                .addGap(3, 3, 3)
+                                .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE)
+                                .addGap(39, 39, 39))
+                            .addGroup(panelRound13Layout.createSequentialGroup()
+                                .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(panelRound13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(adminGenderInput)
+                                    .addComponent(adminUserTypeInput))
+                                .addGap(9, 9, 9)))
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(addUserBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
-            .addGroup(panelRound13Layout.createSequentialGroup()
-                .addGap(172, 172, 172)
-                .addComponent(imageAvatar2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("User Config", panelRound13);
-
-        panelRound15.setBackground(new java.awt.Color(224, 231, 255));
-        panelRound15.setRoundTopLeft(25);
-        panelRound15.setRoundTopRight(25);
-
-        panelRound16.setBackground(new java.awt.Color(165, 180, 252));
-        panelRound16.setRoundBottomLeft(25);
-        panelRound16.setRoundBottomRight(25);
-        panelRound16.setRoundTopLeft(25);
-        panelRound16.setRoundTopRight(25);
-
-        jLabel23.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
-        jLabel23.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel23.setText("Firstname");
-
-        fnameInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        fnameInput.setForeground(new java.awt.Color(51, 51, 51));
-        fnameInput.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                fnameInputKeyReleased(evt);
-            }
-        });
-
-        jLabel24.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
-        jLabel24.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel24.setText("Lastname");
-
-        lnameInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        lnameInput.setForeground(new java.awt.Color(51, 51, 51));
-        lnameInput.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                lnameInputKeyReleased(evt);
-            }
-        });
-
-        jLabel25.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel25.setText("Username");
-
-        UnameInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        UnameInput.setForeground(new java.awt.Color(51, 51, 51));
-        UnameInput.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                UnameInputKeyReleased(evt);
-            }
-        });
-
-        jLabel26.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
-        jLabel26.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel26.setText("Password");
-
-        jTextField12.setForeground(new java.awt.Color(51, 51, 51));
-
-        jLabel27.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
-        jLabel27.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel27.setText("Confirm Password");
-
-        jTextField13.setForeground(new java.awt.Color(51, 51, 51));
-
-        jLabel28.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
-        jLabel28.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel28.setText("Birth Date");
-
-        jDateChooser2.setForeground(new java.awt.Color(51, 51, 51));
-        jDateChooser2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-
-        jLabel29.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
-        jLabel29.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel29.setText("Gender");
-
-        genderInput1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        genderInput1.setForeground(new java.awt.Color(51, 51, 51));
-        genderInput1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Male", "Female" }));
-        genderInput1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                genderInput1ActionPerformed(evt);
-            }
-        });
-
-        userTypeInput1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        userTypeInput1.setForeground(new java.awt.Color(51, 51, 51));
-        userTypeInput1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Seller" }));
-        userTypeInput1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                userTypeInput1ActionPerformed(evt);
-            }
-        });
-
-        jCheckBox2.setFont(new java.awt.Font("Calibri", 0, 10)); // NOI18N
-        jCheckBox2.setForeground(new java.awt.Color(51, 51, 51));
-        jCheckBox2.setText("Show Password");
-
-        jCheckBox4.setFont(new java.awt.Font("Calibri", 0, 10)); // NOI18N
-        jCheckBox4.setForeground(new java.awt.Color(51, 51, 51));
-        jCheckBox4.setText("Show Password");
-
-        jLabel30.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
-        jLabel30.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel30.setText("User Type");
-
-        panelRound9.setRoundBottomLeft(25);
-        panelRound9.setRoundBottomRight(25);
-        panelRound9.setRoundTopLeft(25);
-        panelRound9.setRoundTopRight(25);
-
-        javax.swing.GroupLayout panelRound9Layout = new javax.swing.GroupLayout(panelRound9);
-        panelRound9.setLayout(panelRound9Layout);
-        panelRound9Layout.setHorizontalGroup(
-            panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        panelRound9Layout.setVerticalGroup(
-            panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout panelRound16Layout = new javax.swing.GroupLayout(panelRound16);
-        panelRound16.setLayout(panelRound16Layout);
-        panelRound16Layout.setHorizontalGroup(
-            panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRound16Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(panelRound16Layout.createSequentialGroup()
-                        .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(3, 3, 3)
-                        .addComponent(jCheckBox2))
-                    .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField12)
-                        .addGroup(panelRound16Layout.createSequentialGroup()
-                            .addComponent(jLabel26)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jCheckBox4))
-                        .addComponent(jLabel28)
-                        .addComponent(jTextField13)
-                        .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lnameInput, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel25)
-                        .addComponent(UnameInput, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel23)
-                        .addComponent(fnameInput, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel24)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 93, Short.MAX_VALUE)
-                .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(panelRound9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel30, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel29, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(genderInput1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(userTypeInput1, 0, 163, Short.MAX_VALUE))
-                .addGap(109, 109, 109))
-        );
-        panelRound16Layout.setVerticalGroup(
-            panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRound16Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelRound16Layout.createSequentialGroup()
-                        .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(panelRound16Layout.createSequentialGroup()
-                        .addComponent(jLabel29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(1, 1, 1)))
-                .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fnameInput, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                    .addComponent(genderInput1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel24, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel30, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lnameInput, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                    .addComponent(userTypeInput1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel25, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelRound16Layout.createSequentialGroup()
-                        .addComponent(UnameInput, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelRound16Layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(jCheckBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                            .addComponent(jLabel26))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField12, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE))
-                    .addComponent(panelRound9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelRound16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelRound16Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jCheckBox2, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE))
-                    .addComponent(jLabel27))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField13, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel28, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jDateChooser2, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                .addGap(17, 17, 17))
-        );
-
-        jButton4.setText("ADD");
-
-        panelRound14.setBackground(new java.awt.Color(51, 51, 51));
-        panelRound14.setRoundBottomLeft(25);
-        panelRound14.setRoundBottomRight(25);
-        panelRound14.setRoundTopLeft(25);
-        panelRound14.setRoundTopRight(25);
-
-        panelRound17.setBackground(new java.awt.Color(255, 255, 255));
-        panelRound17.setRoundBottomLeft(25);
-        panelRound17.setRoundBottomRight(25);
-        panelRound17.setRoundTopLeft(25);
-        panelRound17.setRoundTopRight(25);
-
-        imageAvatar3.setForeground(new java.awt.Color(51, 51, 51));
-        imageAvatar3.setBorderSize(1);
-        imageAvatar3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/nullProfile.jpg"))); // NOI18N
-
-        idFullname.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        idFullname.setForeground(new java.awt.Color(51, 51, 51));
-        idFullname.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-
-        idUsername.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
-        idUsername.setForeground(new java.awt.Color(51, 51, 51));
-        idUsername.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-
-        idGender.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        idGender.setForeground(new java.awt.Color(51, 51, 51));
-        idGender.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-
-        idUsertype.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        idUsertype.setForeground(new java.awt.Color(51, 51, 51));
-        idUsertype.setText("Seller ID: example123.wan");
-
-        javax.swing.GroupLayout panelRound17Layout = new javax.swing.GroupLayout(panelRound17);
-        panelRound17.setLayout(panelRound17Layout);
-        panelRound17Layout.setHorizontalGroup(
-            panelRound17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRound17Layout.createSequentialGroup()
-                .addGroup(panelRound17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelRound17Layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(imageAvatar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelRound17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(idFullname, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(panelRound17Layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(idUsertype, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                    .addGroup(panelRound17Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(idUsername, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(idGender, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        panelRound17Layout.setVerticalGroup(
-            panelRound17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRound17Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelRound17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(imageAvatar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(panelRound17Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(idFullname, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(idUsertype, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(52, 52, 52)
-                .addComponent(idUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(idGender, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout panelRound14Layout = new javax.swing.GroupLayout(panelRound14);
-        panelRound14.setLayout(panelRound14Layout);
-        panelRound14Layout.setHorizontalGroup(
-            panelRound14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRound14Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(panelRound17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        panelRound14Layout.setVerticalGroup(
-            panelRound14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRound14Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(panelRound17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout panelRound15Layout = new javax.swing.GroupLayout(panelRound15);
-        panelRound15.setLayout(panelRound15Layout);
-        panelRound15Layout.setHorizontalGroup(
-            panelRound15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelRound15Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(panelRound16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-                .addGroup(panelRound15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelRound14, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-        panelRound15Layout.setVerticalGroup(
-            panelRound15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelRound15Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(panelRound15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(panelRound15Layout.createSequentialGroup()
-                        .addComponent(panelRound14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(panelRound16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(20, 20, 20))
-        );
-
-        jTabbedPane1.addTab("Add Users", panelRound15);
 
         javax.swing.GroupLayout adminPanelLayout = new javax.swing.GroupLayout(adminPanel);
         adminPanel.setLayout(adminPanelLayout);
@@ -1990,177 +1783,176 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     }//GEN-LAST:event_backLabelMouseClicked
 
     private void usersTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usersTableMouseClicked
-        int get_selectedColumn = usersTable.getSelectedColumn();
+        try{
+            int get_selectedColumn = usersTable.getSelectedColumn();
 
-        Object get_id;
-        String new_val;
+            Object get_id;
+            String new_val;
 
-        switch(get_selectedColumn){
-            case 1:
-            get_id = get_TableRecordID(usersTable);
-            new_val = JOptionPane.showInputDialog(this, "Enter new firstname for user "+get_id+":", "Change Firstname", JOptionPane.QUESTION_MESSAGE).toLowerCase();
-            if(new_val != null && get_id != null){
-                if(!Utilities.containsNumbers(new_val)){
-                    if(changeStringData(new_val,get_id,1)){
-                        JOptionPane.showMessageDialog(this, "Change Successfully", "Firstname", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }else{
-                    JOptionPane.showMessageDialog(this, "First name can only contain letters", "Invalid Firstname", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            break;
-            case 2:
-            get_id = get_TableRecordID(usersTable);
-            new_val = JOptionPane.showInputDialog(this, "Enter new lastname for user "+get_id+":", "Change Lastname", JOptionPane.QUESTION_MESSAGE);
-            if(new_val != null && get_id != null){
-                if(!Utilities.containsNumbers(new_val)){
-                    if(changeStringData(new_val,get_id,2)){
-                        JOptionPane.showMessageDialog(this, "Change Successfully", "Lastname", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }else{
-                    JOptionPane.showMessageDialog(this, "Last name can only contain letters", "Invalid Lastname", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            break;
-            case 3:
-            get_id = get_TableRecordID(usersTable);
-            new_val = JOptionPane.showInputDialog(this, "Enter new username for user "+get_id+":", "Change Username", JOptionPane.QUESTION_MESSAGE);
-            if(new_val != null && get_id != null){
-                if(Utilities.validateUsername(new_val)){
-                    if(changeStringData(new_val,get_id,3)){
-                        JOptionPane.showMessageDialog(this, "Change Successfully", "Username", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }else{
-                    JOptionPane.showMessageDialog(this, "Username must follow the pattern: ^[a-zA-Z]+@[0-9]+$", "Invalid Username", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            break;
-            case 4:
-            get_id = get_TableRecordID(usersTable);
-            new_val = JOptionPane.showInputDialog(this, "Enter new password for user "+get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
-            String confirmPass = JOptionPane.showInputDialog(this, "Confirm new password for user "+get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
+            switch(get_selectedColumn){
+                case 0:
+                    if (evt.getClickCount() == 2){
+                        get_id = get_TableRecordID(usersTable);
+                        int response = JOptionPane.showConfirmDialog(this, "Do you want \nto delete the user ID: "+get_id, "Confirmation", JOptionPane.YES_NO_OPTION);
 
-            if(new_val != null && confirmPass != null && get_id != null){
-                if(confirmPass.equals(new_val)){
-                    if(Utilities.validatePassword(confirmPass, this)){
-                        if(changeStringData(confirmPass,get_id,4)){
-                            JOptionPane.showMessageDialog(this, "Change Successfully", "Password", JOptionPane.INFORMATION_MESSAGE);
+                        if (response == JOptionPane.YES_OPTION) {
+                            try {
+                                userManagement.DeleteUser(get_id);
+                            } catch (SQLException ex) {
+                                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     }
-                }else{
-                    JOptionPane.showMessageDialog(null, "Password mismatch", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            break;
-            case 5:
-            get_id = get_TableRecordID(usersTable);
-
-            SpinnerDateModel dateModel = new SpinnerDateModel();
-            JSpinner spinner = new JSpinner(dateModel);
-            spinner.setEditor(new JSpinner.DateEditor(spinner, Helper.dateFormat));
-
-            String message = "Please enter a date in the format "+Helper.dateFormat;
-            int option = JOptionPane.showOptionDialog(
-                this,
-                new Object[]{message, spinner},
-                "Select new birth date",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                null,
-                new Object[]{"OK", "Cancel"},
-                "OK");
-
-            if (option == JOptionPane.OK_OPTION) {
-                Date selectedDate = (Date) spinner.getValue();
-                if (selectedDate != null && get_id != null) {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(Helper.dateFormat);
-                    if(changeStringData(dateFormat.format(selectedDate),get_id,5)){
-                        JOptionPane.showMessageDialog(this, "Change Successfully", "Birth date", JOptionPane.INFORMATION_MESSAGE);
+                    break;
+                case 1:
+                    get_id = get_TableRecordID(usersTable);
+                    new_val = JOptionPane.showInputDialog(this, "Enter new firstname for user "+get_id+":", "Change Firstname", JOptionPane.QUESTION_MESSAGE).toLowerCase();
+                    if(new_val != null && get_id != null){
+                        if(!Utilities.containsNumbers(new_val)){
+                            if(changeStringData(new_val,get_id,1)){
+                                JOptionPane.showMessageDialog(this, "Change Successfully", "Firstname", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }else{
+                            JOptionPane.showMessageDialog(this, "First name can only contain letters", "Invalid Firstname", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
-                } else {
-                    JOptionPane.showMessageDialog(this, "No date selected");
-                }
-            }
-            break;
-            case 6:
-            get_id = get_TableRecordID(usersTable);
-            new_val = (String) JOptionPane.showInputDialog(
-                this,
-                "Choose new gender for user " + get_id + ":",
-                "Change Gender",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                Helper.listOfGender,
-                Helper.listOfGender[0]);
+                    break;
+                case 2:
+                    get_id = get_TableRecordID(usersTable);
+                    new_val = JOptionPane.showInputDialog(this, "Enter new lastname for user "+get_id+":", "Change Lastname", JOptionPane.QUESTION_MESSAGE);
+                    if(new_val != null && get_id != null){
+                        if(!Utilities.containsNumbers(new_val)){
+                            if(changeStringData(new_val,get_id,2)){
+                                JOptionPane.showMessageDialog(this, "Change Successfully", "Lastname", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }else{
+                            JOptionPane.showMessageDialog(this, "Last name can only contain letters", "Invalid Lastname", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                    break;
+                case 3:
+                    get_id = get_TableRecordID(usersTable);
+                    new_val = JOptionPane.showInputDialog(this, "Enter new username for user "+get_id+":", "Change Username", JOptionPane.QUESTION_MESSAGE);
+                    if(new_val != null && get_id != null){
+                        if(Utilities.validateUsername(new_val)){
+                            if(changeStringData(new_val,get_id,3)){
+                                JOptionPane.showMessageDialog(this, "Change Successfully", "Username", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }else{
+                            JOptionPane.showMessageDialog(this, "Username must follow the pattern: ^[a-zA-Z]+@[0-9]+$", "Invalid Username", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                    break;
+                case 4:
+                    get_id = get_TableRecordID(usersTable);
+                    new_val = JOptionPane.showInputDialog(this, "Enter new password for user "+get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
+                    String confirmPass = JOptionPane.showInputDialog(this, "Confirm new password for user "+get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
 
-            if(new_val != null && get_id != null){
-                if(changeStringData(new_val,get_id,6)){
-                    JOptionPane.showMessageDialog(this, "Change Successfully", "Gender", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-            break;
-            case 8:
-            get_id = get_TableRecordID(usersTable);
-            new_val = (String) JOptionPane.showInputDialog(
-                this,
-                "Select new user type for user " + get_id + ":",
-                "Change User type",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                userManagement.listOfUserType,
-                userManagement.listOfUserType[0]);
+                    if(new_val != null && confirmPass != null && get_id != null){
+                        if(confirmPass.equals(new_val)){
+                            if(Utilities.validatePassword(confirmPass, this)){
+                                if(changeStringData(confirmPass,get_id,4)){
+                                    JOptionPane.showMessageDialog(this, "Change Successfully", "Password", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Password mismatch", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                    break;
+                case 5:
+                    get_id = get_TableRecordID(usersTable);
 
-            if(new_val != null && get_id != null){
-                if(changeStringData(new_val,get_id,8)){
-                    JOptionPane.showMessageDialog(this, "Change Successfully", "UserType", JOptionPane.INFORMATION_MESSAGE);
-                }
+                    SpinnerDateModel dateModel = new SpinnerDateModel();
+                    JSpinner spinner = new JSpinner(dateModel);
+                    spinner.setEditor(new JSpinner.DateEditor(spinner, Helper.dateFormat));
+
+                    String message = "Please enter a date in the format "+Helper.dateFormat;
+                    int option = JOptionPane.showOptionDialog(
+                        this,
+                        new Object[]{message, spinner},
+                        "Select new birth date",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        new Object[]{"OK", "Cancel"},
+                        "OK");
+
+                    if (option == JOptionPane.OK_OPTION) {
+                        Date selectedDate = (Date) spinner.getValue();
+                        if (selectedDate != null && get_id != null) {
+                            SimpleDateFormat dateFormat = new SimpleDateFormat(Helper.dateFormat);
+                            if(changeStringData(dateFormat.format(selectedDate),get_id,5)){
+                                JOptionPane.showMessageDialog(this, "Change Successfully", "Birth date", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(this, "No date selected");
+                        }
+                    }
+                    break;
+                case 6:
+                    get_id = get_TableRecordID(usersTable);
+                    new_val = (String) JOptionPane.showInputDialog(
+                        this,
+                        "Choose new gender for user " + get_id + ":",
+                        "Change Gender",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        Helper.listOfGender,
+                        Helper.listOfGender[0]);
+
+                    if(new_val != null && get_id != null){
+                        if(changeStringData(new_val,get_id,6)){
+                            JOptionPane.showMessageDialog(this, "Change Successfully", "Gender", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                    break;
+                case 8:
+                    get_id = get_TableRecordID(usersTable);
+                    new_val = (String) JOptionPane.showInputDialog(
+                        this,
+                        "Select new user type for user " + get_id + ":",
+                        "Change User type",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        userManagement.listOfUserType,
+                        userManagement.listOfUserType[0]);
+
+                    if(new_val != null && get_id != null){
+                        if(changeStringData(new_val,get_id,8)){
+                            JOptionPane.showMessageDialog(this, "Change Successfully", "UserType", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
-            break;
-            default:
-            break;
-        }
-        try {
-            DbConnection.getInstance().tableData(usersTable, userManagement.table);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+            try {
+                userManagement.tableData(usersTable, userManagement.table);
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch(NullPointerException e){}
     }//GEN-LAST:event_usersTableMouseClicked
 
-    private void fnameInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fnameInputKeyReleased
-        idFullname.setText(fnameInput.getText()+" "+lnameInput.getText());
-    }//GEN-LAST:event_fnameInputKeyReleased
+    private void usersTableMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usersTableMouseEntered
+        int column = usersTable.columnAtPoint(evt.getPoint());
 
-    private void lnameInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lnameInputKeyReleased
-        idFullname.setText(fnameInput.getText()+" "+lnameInput.getText());
-    }//GEN-LAST:event_lnameInputKeyReleased
-
-    private void UnameInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_UnameInputKeyReleased
-        String get_input = UnameInput.getText();
-        if(!get_input.isEmpty()){
-            idUsername.setText("Username: "+get_input);
-        }else{
-            idUsername.setText("");
+        if (column == 0) {
+            usersTable.setToolTipText("Double click to delete user!");
         }
-    }//GEN-LAST:event_UnameInputKeyReleased
+    }//GEN-LAST:event_usersTableMouseEntered
 
-    private void genderInput1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genderInput1ActionPerformed
-        String get_input = (String)genderInput1.getSelectedItem();
-        if(!get_input.isEmpty()){
-            idGender.setText("Gender: "+get_input);
-        }else{
-            idGender.setText("");
-        }
-    }//GEN-LAST:event_genderInput1ActionPerformed
-
-    private void userTypeInput1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userTypeInput1ActionPerformed
-        String get_input = (String) userTypeInput1.getSelectedItem();
-        
-         if(!get_input.isEmpty()){
-            idUsertype.setText(get_input+" ID: ");
-        }else{
-            idUsertype.setText("");
-        }
-    }//GEN-LAST:event_userTypeInput1ActionPerformed
+    private void addUserBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addUserBtnActionPerformed
+        int response = JOptionPane.showConfirmDialog(this, "Firstname: "+adminFnameInput.getText()+
+                                                                       "\nLastname: "+adminLnameInput.getText()+
+                                                                       "\nUsername: "+adminUnameInput.getText()+
+                                                                       "\nPassword: "+new String(adminPasswordInput1.getPassword())+
+                                                                       "\nBirth Date: "+adminBdayInput.getDate()+ 
+                                                                       "\nGender: "+adminGenderInput.getSelectedItem()+ 
+                                                                       "\nUser Type: "+adminUserTypeInput.getSelectedItem(),
+                "Confirmation", JOptionPane.YES_NO_OPTION);
+    }//GEN-LAST:event_addUserBtnActionPerformed
     
     private boolean changeStringData(String newVal, Object id,int column_index){
         try{
@@ -2201,10 +1993,18 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField UnameInput;
+    private javax.swing.JButton addUserBtn;
+    private com.toedter.calendar.JDateChooser adminBdayInput;
     private customComponents.ButtonRound adminBtn;
+    private javax.swing.JTextField adminFnameInput;
+    private javax.swing.JComboBox<String> adminGenderInput;
+    private javax.swing.JTextField adminLnameInput;
     private customComponents.PanelRound adminMenu;
     private javax.swing.JPanel adminPanel;
+    private javax.swing.JPasswordField adminPasswordInput;
+    private javax.swing.JPasswordField adminPasswordInput1;
+    private javax.swing.JTextField adminUnameInput;
+    private javax.swing.JComboBox<String> adminUserTypeInput;
     private javax.swing.JLabel backLabel;
     private customComponents.ButtonRound categoryBtn;
     private customComponents.PanelRound categoryPanel;
@@ -2220,45 +2020,31 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private customComponents.ButtonRound dashboardBtn;
     private customComponents.ButtonRound dashboardBtn1;
     private customComponents.PanelRound dashboardPanel;
-    private javax.swing.JTextField fnameInput;
     private javax.swing.JLabel fullnameLabel;
-    private javax.swing.JComboBox<String> genderInput1;
     private javax.swing.JLabel genderLabel;
-    private javax.swing.JLabel idFullname;
-    private javax.swing.JLabel idGender;
-    private javax.swing.JLabel idUsername;
-    private javax.swing.JLabel idUsertype;
     public static customComponents.ImageAvatar imageAvatar1;
-    private customComponents.ImageAvatar imageAvatar2;
-    private customComponents.ImageAvatar imageAvatar3;
     private customComponents.ButtonRound inventoryBtn;
     private customComponents.PanelRound inventoryPanel;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox4;
-    private com.toedter.calendar.JDateChooser jDateChooser2;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField12;
-    private javax.swing.JTextField jTextField13;
     private javax.swing.JLayeredPane layere1;
-    private javax.swing.JTextField lnameInput;
     private customComponents.ButtonRound logoutBtn;
     private customComponents.ButtonRound logoutBtn1;
     private javax.swing.JLayeredPane menuLayere;
@@ -2269,10 +2055,6 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private customComponents.PanelRound panelRound11;
     private customComponents.PanelRound panelRound12;
     private customComponents.PanelRound panelRound13;
-    private customComponents.PanelRound panelRound14;
-    private customComponents.PanelRound panelRound15;
-    private customComponents.PanelRound panelRound16;
-    private customComponents.PanelRound panelRound17;
     private customComponents.PanelRound panelRound2;
     private customComponents.PanelRound panelRound3;
     private customComponents.PanelRound panelRound4;
@@ -2280,7 +2062,6 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private customComponents.PanelRound panelRound6;
     private customComponents.PanelRound panelRound7;
     private customComponents.PanelRound panelRound8;
-    private customComponents.PanelRound panelRound9;
     private customComponents.ButtonRound priceListBtn;
     private customComponents.ButtonRound priceListBtn1;
     private customComponents.PanelRound priceListPanel;
@@ -2301,7 +2082,6 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private javax.swing.JLabel totalSalesLabel;
     private javax.swing.JLabel userSoldItemLabel;
     private javax.swing.JLabel userTotalSalesLabel;
-    private javax.swing.JComboBox<String> userTypeInput1;
     private javax.swing.JLabel userTypeLabel;
     private javax.swing.JLabel usernameLabel;
     private customComponents.ButtonRound usersBtn;

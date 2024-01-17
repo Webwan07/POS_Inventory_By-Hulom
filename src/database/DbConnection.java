@@ -51,48 +51,5 @@ public class DbConnection {
         } catch (SQLException e) {
             return false;
         }
-    } 
-    
-    static String[] getTableColumns(String tableName,JTable component) throws SQLException {
-        ArrayList<String> columnList = new ArrayList<>();
-        String query = "SELECT COLUMN_NAME FROM information_schema.columns WHERE TABLE_NAME = ? AND TABLE_SCHEMA = ?";
-        try{ prepare = connection.prepareStatement(query);
-            prepare.setString(1, tableName);
-            prepare.setString(2, schemaName);
-            ResultSet resultSet = prepare.executeQuery();
-            while (resultSet.next()) {
-                String columnName = resultSet.getString("COLUMN_NAME");
-                columnList.add(columnName);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
-        }finally{
-            prepare.close();
-            result.close();  
-        }
-        return columnList.toArray(String[]::new);
-    }
-    
-    public void tableData(JTable table,String tableName) throws SQLException {
-        String[] columnsToDisplay = getTableColumns(tableName,table);
-        String query = "SELECT " + String.join(", ", columnsToDisplay) + " FROM "+tableName;
-        try {
-            prepare = connection.prepareStatement(query);
-            result = prepare.executeQuery();
-            DefaultTableModel model = (DefaultTableModel) table.getModel();
-            model.setRowCount(0);
-            while (result.next()) {
-                Object[] row = new Object[columnsToDisplay.length];
-                for (int i = 0; i < columnsToDisplay.length; i++) {
-                    row[i] = result.getObject(columnsToDisplay[i]);
-                }
-                model.addRow(row);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(table, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
-        }finally{
-            prepare.close();
-            result.close();  
-        }
     }   
 }

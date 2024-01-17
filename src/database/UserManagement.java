@@ -1,9 +1,14 @@
 package database;
 
 import assets.Author;
+import static database.DbConnection.connection;
+import static database.DbConnection.prepare;
+import static database.DbConnection.result;
 import java.awt.Component;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 @Author("Josuan Leonardo Hulom")
 public class UserManagement extends DbConnection{
@@ -20,6 +25,29 @@ public class UserManagement extends DbConnection{
     public UserManagement(Component component){
         this.component = component;
     }
+    
+    public void tableData(JTable table,String tableName) throws SQLException {
+        String[] columnsToDisplay = columns;
+        String query = "SELECT " + String.join(", ", columnsToDisplay) + " FROM "+tableName;
+        try {
+            prepare = connection.prepareStatement(query);
+            result = prepare.executeQuery();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0);
+            while (result.next()) {
+                Object[] row = new Object[columnsToDisplay.length];
+                for (int i = 0; i < columnsToDisplay.length; i++) {
+                    row[i] = result.getObject(columnsToDisplay[i]);
+                }
+                model.addRow(row);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(table, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        }finally{
+            prepare.close();
+            result.close();  
+        }
+    } 
     
     public boolean checkCurrentUser(String value) throws SQLException {
         String query = "SELECT " + columns[0] + " FROM " + table +
@@ -221,4 +249,17 @@ public class UserManagement extends DbConnection{
             prepare.close();
         }
     }  
+    
+    public void DeleteUser(Object ID) throws SQLException {
+        String query = "DELETE FROM "+table+" WHERE "+columns[0]+" = ?";
+        try{
+            prepare = connection.prepareStatement(query);
+            prepare.setObject(1, ID);
+            prepare.executeUpdate();
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        }finally{
+            prepare.close();
+        }
+    }   
 }
