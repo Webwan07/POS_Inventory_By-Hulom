@@ -1,21 +1,15 @@
 package database;
 
 import assets.Author;
-import static database.DbConnection.connection;
-import static database.DbConnection.prepare;
-import static database.DbConnection.result;
 import java.awt.Component;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
 @Author("Josuan Leonardo Hulom")
 public class UserManagement extends DbConnection{
-    
     public final String table = "userstable";
     
-    private final String[] columns = {"userId","firstname","lastname","username","password",
+    public final String[] columns = {"userId","firstname","lastname","username","password",
         "birthdate","gender","profileImgPath","userType"};
     
     public final String[] listOfUserType = {"Admin","Seller"};
@@ -26,27 +20,8 @@ public class UserManagement extends DbConnection{
         this.component = component;
     }
     
-    public void tableData(JTable table,String tableName) throws SQLException {
-        String[] columnsToDisplay = columns;
-        String query = "SELECT " + String.join(", ", columnsToDisplay) + " FROM "+tableName;
-        try {
-            prepare = connection.prepareStatement(query);
-            result = prepare.executeQuery();
-            DefaultTableModel model = (DefaultTableModel) table.getModel();
-            model.setRowCount(0);
-            while (result.next()) {
-                Object[] row = new Object[columnsToDisplay.length];
-                for (int i = 0; i < columnsToDisplay.length; i++) {
-                    row[i] = result.getObject(columnsToDisplay[i]);
-                }
-                model.addRow(row);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(table, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
-        }finally{
-            prepare.close();
-            result.close();  
-        }
+    public String imageNameGenerator(String fname,String date) {
+        return date +"_"+ fname + "_wan.jpg";
     } 
     
     public boolean checkCurrentUser(String value) throws SQLException {
@@ -140,8 +115,7 @@ public class UserManagement extends DbConnection{
     }
     
     public String getFName(String _id) throws SQLException{
-        String query = "SELECT "+columns[1]+" FROM "+table+" WHERE "
-                + columns[0] + " = ?";
+        String query = "SELECT firstname FROM "+table+" WHERE userId = ?";
         try{
             prepare = connection.prepareStatement(query);
             prepare.setString(1, _id);          
@@ -242,7 +216,6 @@ public class UserManagement extends DbConnection{
             prepare.setString(1, newVal);
             prepare.setObject(2, id);
             prepare.executeUpdate();
-            prepare.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
@@ -262,4 +235,24 @@ public class UserManagement extends DbConnection{
             prepare.close();
         }
     }   
+    
+    public int getHowManyUsers() throws SQLException {
+        String query = "SELECT COUNT(*) FROM " + table;
+        int userCount = 0;
+
+        try {
+            prepare = connection.prepareStatement(query);
+            result = prepare.executeQuery();
+
+            if (result.next()) {
+                userCount = result.getInt(1);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        }finally{
+            prepare.close();
+            result.close();
+        }
+        return userCount;
+    }
 }

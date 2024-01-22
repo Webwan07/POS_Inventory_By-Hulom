@@ -1,21 +1,45 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package database;
 
 import assets.Author;
+import static database.DbConnection.connection;
+import static database.DbConnection.prepare;
+import static database.DbConnection.result;
 import java.awt.Component;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 @Author("Josuan Leonardo Hulom")
 public class AppManagement extends DbConnection{
  
-    private final static String table = "apptable";
+    public final static String table = "apptable";
     
-    private final static String[] columns = {"appID","currentUser"};
+    public final static String[] columns = {"appID","currentUser"};
 
+    public static void tableData(JTable table,String tableName,String[] tableColumn) throws SQLException {
+        String[] columnsToDisplay = tableColumn;
+        String query = "SELECT " + String.join(", ", columnsToDisplay) + " FROM "+tableName;
+        try {
+            prepare = connection.prepareStatement(query);
+            result = prepare.executeQuery();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0);
+            while (result.next()) {
+                Object[] row = new Object[columnsToDisplay.length];
+                for (int i = 0; i < columnsToDisplay.length; i++) {
+                    row[i] = result.getObject(columnsToDisplay[i]);
+                }
+                model.addRow(row);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(table, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        }finally{
+            prepare.close();
+            result.close();  
+        }
+    } 
+ 
     public static String getCurrentUser(Component p_c) throws SQLException{
         String query = "SELECT "+columns[1]+" FROM "+table+" WHERE "+ columns[0] + " = 1";
         

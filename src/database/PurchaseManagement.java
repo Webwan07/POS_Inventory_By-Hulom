@@ -9,9 +9,9 @@ import javax.swing.JOptionPane;
 public class PurchaseManagement extends DbConnection{
     private final Component component;
     
-    private final String table = "purchasedtable";
+    public final String table = "purchasedtable";
     
-    private final String[] columns = {"invoiceNumber","product","discountPercent","quantity","subtotal","total","purchasedDate","sellerfname","sellerlname"};
+    public final String[] columns = {"invoiceNumber","product","discountPercent","quantity","subtotal","total","purchasedDate","sellerfname","sellerlname"};
     
     public PurchaseManagement(Component component){
         this.component = component;
@@ -57,5 +57,19 @@ public class PurchaseManagement extends DbConnection{
             result.close();  
         }
         return salesVal;
+    }  
+    
+    public void updateSellerName(String oldval, String newval, int idx) throws SQLException {
+        String query = "UPDATE "+table+" SET "+columns[idx]+" = ? WHERE "+columns[idx]+" = ?";
+        try {
+            prepare = connection.prepareStatement(query);
+            prepare.setString(1, newval);
+            prepare.setString(2, oldval);
+            prepare.executeUpdate();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        }finally{
+            prepare.close();
+        }
     }  
 }

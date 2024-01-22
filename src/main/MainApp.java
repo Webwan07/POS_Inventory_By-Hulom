@@ -1,18 +1,17 @@
 package main;
 import assets.*;
 import database.AppManagement;
-import database.DbConnection;
+import database.InventoryManagement;
 import database.PurchaseManagement;
 import database.UserManagement;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -21,13 +20,15 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
 
 @Author("Josuan Leonardo Hulom")
 public final class MainApp extends javax.swing.JFrame implements AppInitializers, ImageManagement{
     private final UserManagement userManagement = new UserManagement(this);
     private final PurchaseManagement purchaseManagement = new PurchaseManagement(this);
-    
-    public MainApp() {
+    private final InventoryManagement inventoryManagement = new InventoryManagement(this);
+   
+    public MainApp(){
         Image appIcon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/logo/appLogo.png"));
         this.setIconImage(appIcon);
         
@@ -36,62 +37,86 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         HoverBtn(true);
         backLabelActions(backLabel, new String[]{"back2.png","back1.png","back3.png"});
         
-        if (this.getExtendedState() == this.MAXIMIZED_BOTH) {
-            this.setExtendedState(this.NORMAL);
+        if (this.getExtendedState() == MainApp.MAXIMIZED_BOTH) {
+            this.setExtendedState(MainApp.NORMAL);
         } else {
-            this.setExtendedState(this.MAXIMIZED_BOTH);
+            this.setExtendedState(MainApp.MAXIMIZED_BOTH);
         }
     }
     
     @Override
     public void init_table() {
         try {
-            userManagement.tableData(usersTable, userManagement.table);
+            AppManagement.tableData(usersTable,userManagement.table,userManagement.columns);
+            AppManagement.tableData(inventoryTable,inventoryManagement.table,inventoryManagement.columns);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
     @Override
+    public void init_models(){
+        SpinnerNumberModel quantitySpinner = new SpinnerNumberModel(0,0,Integer.MAX_VALUE,1);
+        inventoryQuantityInput.setModel(quantitySpinner);
+    }
+    
+    @Override
     public void init_user() {
         try{
             String get_id = AppManagement.getCurrentUser(this);
-            String get_image = userManagement.getImagePath(get_id);
-            String get_fname = userManagement.getFName(get_id);
-            String get_lname = userManagement.getLName(get_id);
-            String get_fullname = get_fname + " " + get_lname;
-            String get_username = userManagement.getUName(get_id);
-            String get_gender = userManagement.getGender(get_id);
-            String get_usertype = userManagement.getUserType(get_id);
-            
-            if(get_usertype.equals(userManagement.listOfUserType[0])){
-                switchPanel(menuLayere,adminMenu);
-            }else if(get_usertype.equals(userManagement.listOfUserType[1])){
-                switchPanel(menuLayere,sellerMenu);
-                adminBtn.setVisible(false);
-                adminBtn.setEnabled(false);
-            }else{
-                
+            if(!get_id.equals("nullUser")){
+                String get_image = userManagement.getImagePath(get_id);
+                String get_fname = userManagement.getFName(get_id);
+                String get_lname = userManagement.getLName(get_id);            
+                String get_username = userManagement.getUName(get_id);
+                String get_gender = userManagement.getGender(get_id);
+                String get_usertype = userManagement.getUserType(get_id);
+
+                if(get_usertype.equals(userManagement.listOfUserType[0])){
+                    switchPanel(menuLayere,adminMenu);
+                }else if(get_usertype.equals(userManagement.listOfUserType[1])){
+                    switchPanel(menuLayere,sellerMenu);
+                    adminBtn.setVisible(false);
+                    adminBtn.setEnabled(false);
+                }
+
+                if(get_gender.equals(Helper.listOfGender[0])){
+                    genderLabel.setIcon(new ImageIcon("src/icons/male.png"));
+                }else if(get_gender.equals(Helper.listOfGender[1])){
+                    genderLabel.setIcon(new ImageIcon("src/icons/female.png"));
+                }else{
+                    genderLabel.setIcon(new ImageIcon("src/icons/nogender.png"));
+                }         
+
+                int get_soldItem = purchaseManagement.sellerTotalSold_Item(get_fname, get_lname);
+                double get_sold = purchaseManagement.sellerTotalSold(get_fname, get_lname);
+                userSoldItemLabel.setText(Utilities.formatNumber(get_soldItem));
+                userTotalSalesLabel.setText(Utilities.formatNumber(get_sold));
+                userTypeLabel.setText(get_usertype);
+                usernameLabel.setText(get_username);
+                updatableUserData();
+                setImageToAvatar(imageAvatar1,get_image); 
             }
-            
-            if(get_gender.equals(Helper.listOfGender[0])){
-                genderLabel.setIcon(new ImageIcon("src/icons/male.png"));
-            }else if(get_gender.equals(Helper.listOfGender[1])){
-                genderLabel.setIcon(new ImageIcon("src/icons/female.png"));
-            }else{
-                genderLabel.setIcon(new ImageIcon("src/icons/nogender.png"));
-            }         
-            
-            int get_soldItem = purchaseManagement.sellerTotalSold_Item(get_fname, get_lname);
-            double get_sold = purchaseManagement.sellerTotalSold(get_fname, get_lname);
-            
-            userSoldItemLabel.setText(Utilities.formatNumber(get_soldItem));
-            userTotalSalesLabel.setText(Utilities.formatNumber(get_sold));
-            userTypeLabel.setText(get_usertype);
-            usernameLabel.setText(get_username);
-            fullnameLabel.setText(Utilities.capitalizeEachWord(get_fullname));
-            setImageToAvatar(imageAvatar1,get_image);  
         }catch(SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void updatableUserData(){
+        try {
+            String get_id = AppManagement.getCurrentUser(this);
+                if(!get_id.equals("nullUser")){
+                String get_fname = userManagement.getFName(get_id);
+                String get_lname = userManagement.getLName(get_id);
+                String get_fullname = get_fname + " " + get_lname;  
+                fullnameLabel.setText(Utilities.capitalizeEachWord(get_fullname));
+
+                int get_soldItem = purchaseManagement.sellerTotalSold_Item(get_fname, get_lname);
+                double get_sold = purchaseManagement.sellerTotalSold(get_fname, get_lname);
+                userSoldItemLabel.setText(Utilities.formatNumber(get_soldItem));
+                userTotalSalesLabel.setText(Utilities.formatNumber(get_sold));
+            }
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -345,6 +370,26 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         jLabel9 = new javax.swing.JLabel();
         userTotalSalesLabel = new javax.swing.JLabel();
         inventoryPanel = new customComponents.PanelRound();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        inventoryTable = new javax.swing.JTable();
+        panelRound9 = new customComponents.PanelRound();
+        jLabel17 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jLabel18 = new javax.swing.JLabel();
+        jTextField2 = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
+        inventoryQuantityInput = new javax.swing.JSpinner();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jLabel20 = new javax.swing.JLabel();
+        jSpinner2 = new javax.swing.JSpinner();
+        jLabel22 = new javax.swing.JLabel();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jLabel21 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        textFieldWithIcon1 = new customComponents.TextFieldWithIcon();
+        inventoryImgDisplay = new customComponents.PictureBox();
+        jButton3 = new javax.swing.JButton();
         categoryPanel = new customComponents.PanelRound();
         salesPanel = new customComponents.PanelRound();
         returnItemPanel = new customComponents.PanelRound();
@@ -372,7 +417,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         jLabel16 = new javax.swing.JLabel();
         adminGenderInput = new javax.swing.JComboBox<>();
         adminUserTypeInput = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        adminGetImageBtn = new javax.swing.JButton();
         addUserBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -1356,15 +1401,218 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         inventoryPanel.setBackground(new java.awt.Color(224, 231, 255));
         inventoryPanel.setRoundTopLeft(50);
 
+        inventoryTable.setBackground(new java.awt.Color(224, 231, 255));
+        inventoryTable.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        inventoryTable.setForeground(new java.awt.Color(51, 51, 51));
+        inventoryTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Product ID", "Category", "Product Name", "Description", "Quantity", "Retail Price", "Date of Purchase"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, false, true, true, true, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        inventoryTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inventoryTableMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(inventoryTable);
+
+        panelRound9.setBackground(new java.awt.Color(165, 180, 252));
+        panelRound9.setRoundBottomLeft(25);
+        panelRound9.setRoundBottomRight(25);
+        panelRound9.setRoundTopLeft(50);
+        panelRound9.setRoundTopRight(25);
+
+        jLabel17.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setText("Product");
+
+        jTextField1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jTextField1.setForeground(new java.awt.Color(51, 51, 51));
+
+        jLabel18.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel18.setText("Description");
+
+        jTextField2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jTextField2.setForeground(new java.awt.Color(51, 51, 51));
+
+        jLabel19.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel19.setText("Quantity");
+
+        inventoryQuantityInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+
+        jComboBox1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jComboBox1.setForeground(new java.awt.Color(51, 51, 51));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel20.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel20.setText("Category");
+
+        jSpinner2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+
+        jLabel22.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel22.setText("Retail Price");
+
+        jDateChooser1.setForeground(new java.awt.Color(51, 51, 51));
+        jDateChooser1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+
+        jLabel21.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel21.setText("Date of Purchase");
+
+        javax.swing.GroupLayout panelRound9Layout = new javax.swing.GroupLayout(panelRound9);
+        panelRound9.setLayout(panelRound9Layout);
+        panelRound9Layout.setHorizontalGroup(
+            panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelRound9Layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField1)
+                    .addGroup(panelRound9Layout.createSequentialGroup()
+                        .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(101, 101, 101))
+                    .addComponent(jTextField2)
+                    .addGroup(panelRound9Layout.createSequentialGroup()
+                        .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(81, 81, 81)))
+                .addGap(65, 65, 65)
+                .addGroup(panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelRound9Layout.createSequentialGroup()
+                        .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(96, 96, 96))
+                    .addComponent(inventoryQuantityInput)
+                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panelRound9Layout.createSequentialGroup()
+                        .addComponent(jLabel20, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(94, 94, 94)))
+                .addGap(65, 65, 65)
+                .addGroup(panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSpinner2)
+                    .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panelRound9Layout.createSequentialGroup()
+                        .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(81, 81, 81))
+                    .addGroup(panelRound9Layout.createSequentialGroup()
+                        .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(49, 49, 49)))
+                .addGap(21, 21, 21))
+        );
+        panelRound9Layout.setVerticalGroup(
+            panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelRound9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(jLabel19)
+                    .addComponent(jLabel22))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(inventoryQuantityInput, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel18)
+                        .addComponent(jLabel20))
+                    .addComponent(jLabel21))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelRound9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
+                    .addComponent(jComboBox1)
+                    .addComponent(jTextField2))
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+
+        jButton1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(51, 51, 51));
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/add.png"))); // NOI18N
+        jButton1.setText("ADD");
+
+        jButton2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(51, 51, 51));
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit.png"))); // NOI18N
+        jButton2.setText("Edit");
+
+        textFieldWithIcon1.setForeground(new java.awt.Color(51, 51, 51));
+        textFieldWithIcon1.setPrefixIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/search.png"))); // NOI18N
+
+        inventoryImgDisplay.setImage(new javax.swing.ImageIcon(getClass().getResource("/item_images/no_pic_item.png"))); // NOI18N
+        inventoryImgDisplay.setOpaque(false);
+
+        javax.swing.GroupLayout inventoryImgDisplayLayout = new javax.swing.GroupLayout(inventoryImgDisplay);
+        inventoryImgDisplay.setLayout(inventoryImgDisplayLayout);
+        inventoryImgDisplayLayout.setHorizontalGroup(
+            inventoryImgDisplayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 231, Short.MAX_VALUE)
+        );
+        inventoryImgDisplayLayout.setVerticalGroup(
+            inventoryImgDisplayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jButton3.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jButton3.setForeground(new java.awt.Color(51, 51, 51));
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/delete.png"))); // NOI18N
+        jButton3.setText("DELETE");
+
         javax.swing.GroupLayout inventoryPanelLayout = new javax.swing.GroupLayout(inventoryPanel);
         inventoryPanel.setLayout(inventoryPanelLayout);
         inventoryPanelLayout.setHorizontalGroup(
             inventoryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 881, Short.MAX_VALUE)
+            .addGroup(inventoryPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(inventoryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addGroup(inventoryPanelLayout.createSequentialGroup()
+                        .addGroup(inventoryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(inventoryPanelLayout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(textFieldWithIcon1, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(panelRound9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(inventoryImgDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(13, 13, 13)))
+                .addContainerGap())
         );
         inventoryPanelLayout.setVerticalGroup(
             inventoryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 546, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, inventoryPanelLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(inventoryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(inventoryPanelLayout.createSequentialGroup()
+                        .addComponent(panelRound9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(inventoryPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textFieldWithIcon1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(inventoryImgDisplay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 334, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         contentLayere.add(inventoryPanel, "card2");
@@ -1523,6 +1771,11 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
 
         adminFnameInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         adminFnameInput.setForeground(new java.awt.Color(51, 51, 51));
+        adminFnameInput.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                adminFnameInputKeyReleased(evt);
+            }
+        });
 
         jLabel10.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(51, 51, 51));
@@ -1530,6 +1783,11 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
 
         adminLnameInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         adminLnameInput.setForeground(new java.awt.Color(51, 51, 51));
+        adminLnameInput.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                adminLnameInputKeyReleased(evt);
+            }
+        });
 
         jLabel11.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(51, 51, 51));
@@ -1537,6 +1795,11 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
 
         adminUnameInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         adminUnameInput.setForeground(new java.awt.Color(51, 51, 51));
+        adminUnameInput.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                adminUnameInputKeyReleased(evt);
+            }
+        });
 
         jLabel12.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(51, 51, 51));
@@ -1544,6 +1807,11 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
 
         adminPasswordInput.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         adminPasswordInput.setForeground(new java.awt.Color(51, 51, 51));
+        adminPasswordInput.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                adminPasswordInputKeyReleased(evt);
+            }
+        });
 
         jLabel13.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(51, 51, 51));
@@ -1575,8 +1843,13 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         adminUserTypeInput.setForeground(new java.awt.Color(51, 51, 51));
         adminUserTypeInput.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Seller" }));
 
-        jButton1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        jButton1.setText("Select Image");
+        adminGetImageBtn.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        adminGetImageBtn.setText("Select Image");
+        adminGetImageBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                adminGetImageBtnActionPerformed(evt);
+            }
+        });
 
         addUserBtn.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         addUserBtn.setText("ADD USER");
@@ -1618,7 +1891,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                     .addGroup(panelRound13Layout.createSequentialGroup()
                         .addGap(55, 55, 55)
                         .addGroup(panelRound13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(adminGetImageBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(addUserBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
@@ -1666,7 +1939,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                                     .addComponent(adminGenderInput)
                                     .addComponent(adminUserTypeInput))
                                 .addGap(9, 9, 9)))
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(adminGetImageBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(addUserBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1))
@@ -1786,18 +2059,18 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         try{
             int get_selectedColumn = usersTable.getSelectedColumn();
 
-            Object get_id;
+            Object up_get_id;
             String new_val;
 
             switch(get_selectedColumn){
                 case 0:
                     if (evt.getClickCount() == 2){
-                        get_id = get_TableRecordID(usersTable);
-                        int response = JOptionPane.showConfirmDialog(this, "Do you want \nto delete the user ID: "+get_id, "Confirmation", JOptionPane.YES_NO_OPTION);
+                        up_get_id = get_TableRecordID(usersTable);
+                        int response = JOptionPane.showConfirmDialog(this, "Do you want \nto delete the user ID: "+up_get_id, "Confirmation", JOptionPane.YES_NO_OPTION);
 
                         if (response == JOptionPane.YES_OPTION) {
                             try {
-                                userManagement.DeleteUser(get_id);
+                                userManagement.DeleteUser(up_get_id);
                             } catch (SQLException ex) {
                                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                             }
@@ -1805,55 +2078,75 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                     }
                     break;
                 case 1:
-                    get_id = get_TableRecordID(usersTable);
-                    new_val = JOptionPane.showInputDialog(this, "Enter new firstname for user "+get_id+":", "Change Firstname", JOptionPane.QUESTION_MESSAGE).toLowerCase();
-                    if(new_val != null && get_id != null){
-                        if(!Utilities.containsNumbers(new_val)){
-                            if(changeStringData(new_val,get_id,1)){
-                                JOptionPane.showMessageDialog(this, "Change Successfully", "Firstname", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                        }else{
+                    up_get_id = get_TableRecordID(usersTable);
+                    do{
+                        new_val = JOptionPane.showInputDialog(this, "Enter new firstname for user "+up_get_id+":", "Change Firstname", JOptionPane.QUESTION_MESSAGE).toLowerCase();
+                        if(Utilities.containsNumbers(new_val)){
                             JOptionPane.showMessageDialog(this, "First name can only contain letters", "Invalid Firstname", JOptionPane.ERROR_MESSAGE);
+                            updatableUserData();
+                        }
+                    }while(Utilities.containsNumbers(new_val));
+                    
+                    if(new_val != null && up_get_id != null){
+                        String fnameOld = usersTable.getValueAt(usersTable.getSelectedRow(), 1).toString();
+                        if(changeStringData(new_val,up_get_id,1)){
+                            purchaseManagement.updateSellerName(fnameOld, new_val,7);
+                            JOptionPane.showMessageDialog(this, "Change Successfully", "Firstname", JOptionPane.INFORMATION_MESSAGE);
+                            updatableUserData();
                         }
                     }
                     break;
                 case 2:
-                    get_id = get_TableRecordID(usersTable);
-                    new_val = JOptionPane.showInputDialog(this, "Enter new lastname for user "+get_id+":", "Change Lastname", JOptionPane.QUESTION_MESSAGE);
-                    if(new_val != null && get_id != null){
-                        if(!Utilities.containsNumbers(new_val)){
-                            if(changeStringData(new_val,get_id,2)){
-                                JOptionPane.showMessageDialog(this, "Change Successfully", "Lastname", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                        }else{
+                    up_get_id = get_TableRecordID(usersTable);
+                    do{
+                        new_val = JOptionPane.showInputDialog(this, "Enter new lastname for user "+up_get_id+":", "Change Lastname", JOptionPane.QUESTION_MESSAGE);
+                        if(Utilities.containsNumbers(new_val)){
                             JOptionPane.showMessageDialog(this, "Last name can only contain letters", "Invalid Lastname", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }while(Utilities.containsNumbers(new_val));
+                    
+                    if(new_val != null && up_get_id != null){
+                        String lnameOld = usersTable.getValueAt(usersTable.getSelectedRow(), 2).toString();
+                        if(changeStringData(new_val,up_get_id,2)){
+                            purchaseManagement.updateSellerName(lnameOld, new_val,8);
+                            JOptionPane.showMessageDialog(this, "Change Successfully", "Lastname", JOptionPane.INFORMATION_MESSAGE);
+                            updatableUserData();
                         }
                     }
                     break;
                 case 3:
-                    get_id = get_TableRecordID(usersTable);
-                    new_val = JOptionPane.showInputDialog(this, "Enter new username for user "+get_id+":", "Change Username", JOptionPane.QUESTION_MESSAGE);
-                    if(new_val != null && get_id != null){
-                        if(Utilities.validateUsername(new_val)){
-                            if(changeStringData(new_val,get_id,3)){
-                                JOptionPane.showMessageDialog(this, "Change Successfully", "Username", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                        }else{
+                    up_get_id = get_TableRecordID(usersTable);
+                    do{
+                        new_val = JOptionPane.showInputDialog(this, "Enter new username for user "+up_get_id+":", "Change Username", JOptionPane.QUESTION_MESSAGE);
+                        if(!Utilities.validateUsername(new_val)){
                             JOptionPane.showMessageDialog(this, "Username must follow the pattern: ^[a-zA-Z]+@[0-9]+$", "Invalid Username", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }while(!Utilities.validateUsername(new_val));
+                    
+                    if(new_val != null && up_get_id != null){
+                        if(changeStringData(new_val,up_get_id,3)){
+                                JOptionPane.showMessageDialog(this, "Change Successfully", "Username", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
                     break;
                 case 4:
-                    get_id = get_TableRecordID(usersTable);
-                    new_val = JOptionPane.showInputDialog(this, "Enter new password for user "+get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
-                    String confirmPass = JOptionPane.showInputDialog(this, "Confirm new password for user "+get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
+                    up_get_id = get_TableRecordID(usersTable);
+                    do{
+                        new_val = JOptionPane.showInputDialog(this, "Enter new password for user "+up_get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
+                    }while(!Utilities.validatePassword(new_val, this));
+                    
+                    String confirmPass = null;
+                    
+                    if(new_val != null){
+                        do{
+                            confirmPass = JOptionPane.showInputDialog(this, "Confirm new password for user "+up_get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
+                        }while(!Utilities.validatePassword(confirmPass, this));
+                    }
 
-                    if(new_val != null && confirmPass != null && get_id != null){
+                    if(new_val != null && confirmPass != null && up_get_id != null){
                         if(confirmPass.equals(new_val)){
-                            if(Utilities.validatePassword(confirmPass, this)){
-                                if(changeStringData(confirmPass,get_id,4)){
-                                    JOptionPane.showMessageDialog(this, "Change Successfully", "Password", JOptionPane.INFORMATION_MESSAGE);
-                                }
+                            if(changeStringData(confirmPass,up_get_id,4)){
+                                JOptionPane.showMessageDialog(this, "Change Successfully", "Password", JOptionPane.INFORMATION_MESSAGE);
                             }
                         }else{
                             JOptionPane.showMessageDialog(null, "Password mismatch", "Error", JOptionPane.ERROR_MESSAGE);
@@ -1861,7 +2154,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                     }
                     break;
                 case 5:
-                    get_id = get_TableRecordID(usersTable);
+                    up_get_id = get_TableRecordID(usersTable);
 
                     SpinnerDateModel dateModel = new SpinnerDateModel();
                     JSpinner spinner = new JSpinner(dateModel);
@@ -1880,9 +2173,9 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
 
                     if (option == JOptionPane.OK_OPTION) {
                         Date selectedDate = (Date) spinner.getValue();
-                        if (selectedDate != null && get_id != null) {
+                        if (selectedDate != null && up_get_id != null) {
                             SimpleDateFormat dateFormat = new SimpleDateFormat(Helper.dateFormat);
-                            if(changeStringData(dateFormat.format(selectedDate),get_id,5)){
+                            if(changeStringData(dateFormat.format(selectedDate),up_get_id,5)){
                                 JOptionPane.showMessageDialog(this, "Change Successfully", "Birth date", JOptionPane.INFORMATION_MESSAGE);
                             }
                         } else {
@@ -1891,35 +2184,35 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                     }
                     break;
                 case 6:
-                    get_id = get_TableRecordID(usersTable);
+                    up_get_id = get_TableRecordID(usersTable);
                     new_val = (String) JOptionPane.showInputDialog(
                         this,
-                        "Choose new gender for user " + get_id + ":",
+                        "Choose new gender for user " + up_get_id + ":",
                         "Change Gender",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         Helper.listOfGender,
                         Helper.listOfGender[0]);
 
-                    if(new_val != null && get_id != null){
-                        if(changeStringData(new_val,get_id,6)){
+                    if(new_val != null && up_get_id != null){
+                        if(changeStringData(new_val,up_get_id,6)){
                             JOptionPane.showMessageDialog(this, "Change Successfully", "Gender", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
                     break;
                 case 8:
-                    get_id = get_TableRecordID(usersTable);
+                    up_get_id = get_TableRecordID(usersTable);
                     new_val = (String) JOptionPane.showInputDialog(
                         this,
-                        "Select new user type for user " + get_id + ":",
+                        "Select new user type for user " + up_get_id + ":",
                         "Change User type",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         userManagement.listOfUserType,
                         userManagement.listOfUserType[0]);
 
-                    if(new_val != null && get_id != null){
-                        if(changeStringData(new_val,get_id,8)){
+                    if(new_val != null && up_get_id != null){
+                        if(changeStringData(new_val,up_get_id,8)){
                             JOptionPane.showMessageDialog(this, "Change Successfully", "UserType", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
@@ -1928,11 +2221,16 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                     break;
             }
             try {
-                userManagement.tableData(usersTable, userManagement.table);
+                AppManagement.tableData(usersTable,userManagement.table,userManagement.columns);
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch(NullPointerException e){}
+        } catch(NullPointerException e){
+        
+        } 
+        catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_usersTableMouseClicked
 
     private void usersTableMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usersTableMouseEntered
@@ -1942,17 +2240,90 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             usersTable.setToolTipText("Double click to delete user!");
         }
     }//GEN-LAST:event_usersTableMouseEntered
-
+    
     private void addUserBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addUserBtnActionPerformed
-        int response = JOptionPane.showConfirmDialog(this, "Firstname: "+adminFnameInput.getText()+
-                                                                       "\nLastname: "+adminLnameInput.getText()+
-                                                                       "\nUsername: "+adminUnameInput.getText()+
-                                                                       "\nPassword: "+new String(adminPasswordInput1.getPassword())+
-                                                                       "\nBirth Date: "+adminBdayInput.getDate()+ 
-                                                                       "\nGender: "+adminGenderInput.getSelectedItem()+ 
-                                                                       "\nUser Type: "+adminUserTypeInput.getSelectedItem(),
-                "Confirmation", JOptionPane.YES_NO_OPTION);
+//        int response = JOptionPane.showConfirmDialog(this, "Firstname: "+adminFnameInput.getText()+
+//                                                                       "\nLastname: "+adminLnameInput.getText()+
+//                                                                       "\nUsername: "+adminUnameInput.getText()+
+//                                                                       "\nPassword: "+new String(adminPasswordInput1.getPassword())+
+//                                                                       "\nBirth Date: "+adminBdayInput.getDate()+ 
+//                                                                       "\nGender: "+adminGenderInput.getSelectedItem()+ 
+//                                                                       "\nUser Type: "+adminUserTypeInput.getSelectedItem(),
+//                "Confirmation", JOptionPane.YES_NO_OPTION);
+
+        String get_fname = adminFnameInput.getText().toLowerCase();
+        String get_lname = adminLnameInput.getText().toLowerCase();
+        String get_uname = adminUnameInput.getText().toLowerCase();
+        String get_password = new String(adminPasswordInput.getPassword());
+        String get_cpassword = new String(adminPasswordInput1.getPassword());
+        Date get_bday = adminBdayInput.getDate();
+        String get_gender = adminGenderInput.getSelectedItem().toString();
+        String get_usertype = adminUserTypeInput.getSelectedItem().toString();
+        boolean validatefname = get_fname.matches("[a-zA-Z]+") && !get_fname.isEmpty() && !get_fname.trim().isEmpty();
+        boolean validatelname = get_lname.matches("[a-zA-Z]+") && !get_fname.isEmpty() && !get_fname.trim().isEmpty();
     }//GEN-LAST:event_addUserBtnActionPerformed
+
+    private void adminFnameInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_adminFnameInputKeyReleased
+        final String value = adminFnameInput.getText();
+        if(Utilities.containsNumbers(value)){
+            JOptionPane.showMessageDialog(this, "First name can only contain letters", "Invalid Firstname", JOptionPane.ERROR_MESSAGE);
+            for(int i = 0; i < value.length(); i++){
+                char cur_char = value.charAt(i);
+                if(Character.isDigit(cur_char)){
+                    adminFnameInput.setText(value.replaceAll("\\d", ""));
+                }
+            }
+        }
+    }//GEN-LAST:event_adminFnameInputKeyReleased
+
+    private void adminLnameInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_adminLnameInputKeyReleased
+        final String value = adminLnameInput.getText();
+        if(Utilities.containsNumbers(value)){
+            JOptionPane.showMessageDialog(this, "Last name can only contain letters", "Invalid Firstname", JOptionPane.ERROR_MESSAGE);
+            for(int i = 0; i < value.length(); i++){
+                char cur_char = value.charAt(i);
+                if(Character.isDigit(cur_char)){
+                    adminLnameInput.setText(value.replaceAll("\\d", ""));
+                }
+            }
+        }
+    }//GEN-LAST:event_adminLnameInputKeyReleased
+
+    private void adminUnameInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_adminUnameInputKeyReleased
+
+    }//GEN-LAST:event_adminUnameInputKeyReleased
+
+    private void adminPasswordInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_adminPasswordInputKeyReleased
+
+    }//GEN-LAST:event_adminPasswordInputKeyReleased
+    
+    private void adminGetImageBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminGetImageBtnActionPerformed
+//        final File get_file_image = get_ImageFile(this);
+//        try{
+//            String get_id = AppManagement.getCurrentUser(this);
+//            String get_fname = userManagement.getFName(get_id).replaceAll(" ", "_");        
+//            System.out.println(userManagement.imageNameGenerator(get_fname, Utilities.getCurrentDate(Helper.dateFormat)));
+//        }catch(SQLException e){
+//            
+//        }
+
+        System.out.println(Utilities.validateAge(adminBdayInput));
+    }//GEN-LAST:event_adminGetImageBtnActionPerformed
+    
+    private void setItemImage(String img_name){
+        ImageIcon img = new ImageIcon("src/item_images/"+img_name);
+        inventoryImgDisplay.setImage(img);
+        inventoryImgDisplay.repaint();
+    }   
+    
+    private void inventoryTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inventoryTableMouseClicked
+        int item_id = Integer.parseInt(inventoryTable.getValueAt(inventoryTable.getSelectedRow(), 0).toString());
+        try {
+            setItemImage(inventoryManagement.getItemImage(item_id));
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_inventoryTableMouseClicked
     
     private boolean changeStringData(String newVal, Object id,int column_index){
         try{
@@ -1998,6 +2369,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private customComponents.ButtonRound adminBtn;
     private javax.swing.JTextField adminFnameInput;
     private javax.swing.JComboBox<String> adminGenderInput;
+    private javax.swing.JButton adminGetImageBtn;
     private javax.swing.JTextField adminLnameInput;
     private customComponents.PanelRound adminMenu;
     private javax.swing.JPanel adminPanel;
@@ -2024,8 +2396,15 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private javax.swing.JLabel genderLabel;
     public static customComponents.ImageAvatar imageAvatar1;
     private customComponents.ButtonRound inventoryBtn;
+    private customComponents.PictureBox inventoryImgDisplay;
     private customComponents.PanelRound inventoryPanel;
+    private javax.swing.JSpinner inventoryQuantityInput;
+    private javax.swing.JTable inventoryTable;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -2034,7 +2413,13 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -2043,7 +2428,11 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSpinner jSpinner2;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     private javax.swing.JLayeredPane layere1;
     private customComponents.ButtonRound logoutBtn;
     private customComponents.ButtonRound logoutBtn1;
@@ -2062,6 +2451,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private customComponents.PanelRound panelRound6;
     private customComponents.PanelRound panelRound7;
     private customComponents.PanelRound panelRound8;
+    private customComponents.PanelRound panelRound9;
     private customComponents.ButtonRound priceListBtn;
     private customComponents.ButtonRound priceListBtn1;
     private customComponents.PanelRound priceListPanel;
@@ -2076,6 +2466,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private customComponents.PanelRound sellerMenu;
     private javax.swing.JLabel soldOldLabel;
     private javax.swing.JLabel soldTotayLabel;
+    private customComponents.TextFieldWithIcon textFieldWithIcon1;
     private javax.swing.JLabel title;
     private javax.swing.JLabel todaysalesLabel;
     private javax.swing.JLabel totalProductsLabel;

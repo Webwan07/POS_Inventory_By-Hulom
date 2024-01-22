@@ -8,10 +8,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
 @Author("Josuan Leonardo Hulom")
 public class DbConnection {
@@ -37,13 +34,6 @@ public class DbConnection {
             JOptionPane.showMessageDialog(null, "Error: No database connected!", "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    public static DbConnection getInstance() {
-        if (instance == null) {
-            instance = new DbConnection();
-        }
-        return instance;
-    }
 
     public boolean isDatabaseConnected() {
         try {
@@ -52,4 +42,11 @@ public class DbConnection {
             return false;
         }
     }   
+    
+    public static DbConnection getInstance(){
+        if(instance == null){
+            instance = new DbConnection();
+        }
+        return instance;
+    }
 }

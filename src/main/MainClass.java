@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 
 @Author("Josuan Leonardo Hulom")
 public class MainClass {
-    private static final DbConnection dbConnection = DbConnection.getInstance();
+    public static final DbConnection dbConnection = DbConnection.getInstance();
     
     public static void main(String args[]) throws SQLException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);

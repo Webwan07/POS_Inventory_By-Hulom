@@ -5,6 +5,7 @@ import database.AppManagement;
 import database.DbConnection;
 import database.UserManagement;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -14,13 +15,15 @@ import main.MainApp;
 
 @Author("Josuan Leonardo Hulom")
 public class LoginApp extends javax.swing.JFrame {
-    private final DbConnection dbConnection = DbConnection.getInstance();
     private final UserManagement userManagement = new UserManagement(this);
     public LoginApp() {
         Image appIcon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/loginPage.png"));
         this.setIconImage(appIcon);
         
         initComponents();
+        
+        
+        System.out.println(loginBtn.getLocation());
     }
 
     @SuppressWarnings("unchecked")
@@ -57,6 +60,11 @@ public class LoginApp extends javax.swing.JFrame {
                 usernameTextFieldActionPerformed(evt);
             }
         });
+        usernameTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                usernameTextFieldKeyReleased(evt);
+            }
+        });
 
         passwordField.setBackground(new java.awt.Color(165, 180, 252));
         passwordField.setForeground(new java.awt.Color(255, 255, 255));
@@ -71,9 +79,19 @@ public class LoginApp extends javax.swing.JFrame {
                 passwordFieldActionPerformed(evt);
             }
         });
+        passwordField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                passwordFieldKeyReleased(evt);
+            }
+        });
 
         loginBtn.setBackground(new java.awt.Color(79, 70, 229));
         loginBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/login.png"))); // NOI18N
+        loginBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                loginBtnMouseEntered(evt);
+            }
+        });
         loginBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginBtnActionPerformed(evt);
@@ -86,14 +104,16 @@ public class LoginApp extends javax.swing.JFrame {
             panelRound1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRound1Layout.createSequentialGroup()
                 .addGap(48, 48, 48)
-                .addGroup(panelRound1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(usernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelRound1Layout.createSequentialGroup()
-                .addContainerGap(112, Short.MAX_VALUE)
-                .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(112, 112, 112))
+                .addGroup(panelRound1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelRound1Layout.createSequentialGroup()
+                        .addGap(0, 64, Short.MAX_VALUE)
+                        .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(112, 112, 112))
+                    .addGroup(panelRound1Layout.createSequentialGroup()
+                        .addGroup(panelRound1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(usernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         panelRound1Layout.setVerticalGroup(
             panelRound1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -207,13 +227,50 @@ public class LoginApp extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_loginBtnActionPerformed
 
+    private Point currentLocation = new Point(112, 295);
+    private void loginBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginBtnMouseEntered
+        String get_username = usernameTextField.getText();
+        char[] get_p = passwordField.getPassword();
+        String get_password = new String(get_p);         
+        
+        boolean emptyUsername = get_username.trim().isEmpty();
+        boolean emptyPassword = get_password.trim().isEmpty();
+        Point newLocation;
+    
+        if (emptyUsername || emptyPassword) {
+            if (currentLocation.equals(new Point(112, 343))) {
+                newLocation = new Point(112, 295);
+            } else {
+                newLocation = new Point(112, 343);
+            }
+            loginBtn.setLocation(newLocation);
+            currentLocation = newLocation;
+        }
+    }//GEN-LAST:event_loginBtnMouseEntered
+
+    private void usernameTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameTextFieldKeyReleased
+        if(!usernameTextField.getText().trim().isEmpty()){
+            loginBtn.setLocation(new Point(112, 295));
+        }
+    }//GEN-LAST:event_usernameTextFieldKeyReleased
+
+    private void passwordFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordFieldKeyReleased
+        char[] get_p = passwordField.getPassword();
+        String get_password = new String(get_p); 
+        
+        if(!get_password.trim().isEmpty()){
+            loginBtn.setLocation(new Point(112, 295));
+        }
+    }//GEN-LAST:event_passwordFieldKeyReleased
+
     private void loginMethod(String username, String password) throws SQLException{
         short result = userManagement.checkUserCredentials(username, password);
 
         switch (result) {
             case 1:
-                JOptionPane.showMessageDialog(this, "Login successful!");
                 String current_user = userManagement.getUserId(username, password);
+                String get_fname = userManagement.getFName(current_user);
+                JOptionPane.showMessageDialog(this, "Welcome "+get_fname,"Login successful",JOptionPane.INFORMATION_MESSAGE);
                 AppManagement.setCurrentUser(current_user, this);
                 System.out.println("Current user: "+current_user);            
                 
