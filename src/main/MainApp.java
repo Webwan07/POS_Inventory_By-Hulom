@@ -35,7 +35,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         initComponents();
         initialize();
         HoverBtn(true);
-        backLabelActions(backLabel, new String[]{"back2.png","back1.png","back3.png"});
+        Utilities.backLabelActions(backLabel, new String[]{"back2.png","back1.png","back3.png"});
         
         if (this.getExtendedState() == MainApp.MAXIMIZED_BOTH) {
             this.setExtendedState(MainApp.NORMAL);
@@ -73,9 +73,9 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 String get_usertype = userManagement.getUserType(get_id);
 
                 if(get_usertype.equals(userManagement.listOfUserType[0])){
-                    switchPanel(menuLayere,adminMenu);
+                    Utilities.switchPanel(menuLayere,adminMenu);
                 }else if(get_usertype.equals(userManagement.listOfUserType[1])){
-                    switchPanel(menuLayere,sellerMenu);
+                    Utilities.switchPanel(menuLayere,sellerMenu);
                     adminBtn.setVisible(false);
                     adminBtn.setEnabled(false);
                 }
@@ -283,14 +283,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }); 
         }
     }
-    
-    private static void switchPanel(JLayeredPane layered, JPanel panel){
-        layered.removeAll();
-        layered.add(panel);
-        layered.repaint();
-        layered.revalidate();         
-    }    
-    
+     
     private void logoutMethod(){
         try{
             AppManagement.setCurrentUser("nullUser", this);
@@ -1988,35 +1981,35 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     }// </editor-fold>//GEN-END:initComponents
 
     private void dashboardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardBtnActionPerformed
-        switchPanel(contentLayere,dashboardPanel);
+        Utilities.switchPanel(contentLayere,dashboardPanel);
     }//GEN-LAST:event_dashboardBtnActionPerformed
 
     private void usersBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usersBtnActionPerformed
-        switchPanel(contentLayere,usersPanel);
+        Utilities.switchPanel(contentLayere,usersPanel);
     }//GEN-LAST:event_usersBtnActionPerformed
 
     private void inventoryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inventoryBtnActionPerformed
-        switchPanel(contentLayere,inventoryPanel);
+        Utilities.switchPanel(contentLayere,inventoryPanel);
     }//GEN-LAST:event_inventoryBtnActionPerformed
 
     private void categoryBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryBtnActionPerformed
-        switchPanel(contentLayere,categoryPanel);
+        Utilities.switchPanel(contentLayere,categoryPanel);
     }//GEN-LAST:event_categoryBtnActionPerformed
 
     private void salesBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salesBtnActionPerformed
-        switchPanel(contentLayere,salesPanel);
+        Utilities.switchPanel(contentLayere,salesPanel);
     }//GEN-LAST:event_salesBtnActionPerformed
 
     private void returnItemBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnItemBtnActionPerformed
-        switchPanel(contentLayere,returnItemPanel);
+        Utilities.switchPanel(contentLayere,returnItemPanel);
     }//GEN-LAST:event_returnItemBtnActionPerformed
 
     private void priceListBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_priceListBtnActionPerformed
-        switchPanel(contentLayere,priceListPanel);
+        Utilities.switchPanel(contentLayere,priceListPanel);
     }//GEN-LAST:event_priceListBtnActionPerformed
 
     private void reportBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportBtnActionPerformed
-        switchPanel(contentLayere,reportPanel);
+        Utilities.switchPanel(contentLayere,reportPanel);
     }//GEN-LAST:event_reportBtnActionPerformed
 
     private void logoutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtnActionPerformed
@@ -2024,23 +2017,23 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     }//GEN-LAST:event_logoutBtnActionPerformed
 
     private void dashboardBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardBtn1ActionPerformed
-        switchPanel(contentLayere,dashboardPanel);
+        Utilities.switchPanel(contentLayere,dashboardPanel);
     }//GEN-LAST:event_dashboardBtn1ActionPerformed
 
     private void usersBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usersBtn1ActionPerformed
-        switchPanel(contentLayere,usersPanel);
+        Utilities.switchPanel(contentLayere,usersPanel);
     }//GEN-LAST:event_usersBtn1ActionPerformed
 
     private void salesBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salesBtn1ActionPerformed
-        switchPanel(contentLayere,salesPanel);
+        Utilities.switchPanel(contentLayere,salesPanel);
     }//GEN-LAST:event_salesBtn1ActionPerformed
 
     private void returnItemBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnItemBtn1ActionPerformed
-        switchPanel(contentLayere,returnItemPanel);
+        Utilities.switchPanel(contentLayere,returnItemPanel);
     }//GEN-LAST:event_returnItemBtn1ActionPerformed
 
     private void priceListBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_priceListBtn1ActionPerformed
-        switchPanel(contentLayere,priceListPanel);
+        Utilities.switchPanel(contentLayere,priceListPanel);
     }//GEN-LAST:event_priceListBtn1ActionPerformed
 
     private void logoutBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutBtn1ActionPerformed
@@ -2048,11 +2041,11 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     }//GEN-LAST:event_logoutBtn1ActionPerformed
 
     private void adminBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminBtnActionPerformed
-        switchPanel(layere1,adminPanel);
+        Utilities.switchPanel(layere1,adminPanel);
     }//GEN-LAST:event_adminBtnActionPerformed
 
     private void backLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_backLabelMouseClicked
-        switchPanel(layere1,panel1);
+        Utilities.switchPanel(layere1,panel1);
     }//GEN-LAST:event_backLabelMouseClicked
 
     private void usersTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usersTableMouseClicked
@@ -2333,34 +2326,6 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         return false;
-    }
-        
-    public void backLabelActions(JLabel label,String[] iconName){
-        label.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mousePressed(MouseEvent e){
-                label.setIcon(new ImageIcon("src/icons/"+iconName[2]));
-                label.repaint();
-            }
-            
-            @Override
-            public void mouseReleased(MouseEvent e){
-                label.setIcon(new ImageIcon("src/icons/"+iconName[0]));
-                label.repaint();                       
-            }
-            
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                label.setIcon(new ImageIcon("src/icons/"+iconName[1]));
-                label.repaint();
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                label.setIcon(new ImageIcon("src/icons/"+iconName[0]));
-                label.repaint();       
-            }
-        });
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

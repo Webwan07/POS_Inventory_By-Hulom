@@ -73,6 +73,28 @@ public class UserManagement extends DbConnection{
         return 0; 
     }
     
+    public short checkUserCredentials(String userID) throws SQLException {
+        String query = "SELECT * FROM " + table + " WHERE "+columns[0]+" = ?";
+
+        try {
+            prepare = connection.prepareStatement(query);
+            prepare.setString(1, userID);
+            result = prepare.executeQuery();
+
+            if (result.next()) {
+                return 1; 
+            } else {
+                return 0; 
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+            return -1; 
+        } finally {
+            prepare.close();
+            result.close();
+        }
+    }
+    
     public String getUserId(String u_name,String u_pass) throws SQLException{
         String query = "SELECT "+columns[0]+" FROM "+table+" WHERE "
                 + columns[3] + " = ? AND "+columns[4]+" = ?";

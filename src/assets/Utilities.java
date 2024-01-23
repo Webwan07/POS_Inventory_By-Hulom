@@ -1,7 +1,10 @@
 package assets;
 
 import com.toedter.calendar.JDateChooser;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,10 +13,77 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 @Author("Josuan Leonardo Hulom")
 public class Utilities {
+    public static void switchPanel(JLayeredPane layered, JPanel panel){
+        layered.removeAll();
+        layered.add(panel);
+        layered.repaint();
+        layered.revalidate();         
+    }  
+    
+    public static void backLabelActions(JLabel label,String[] iconName){
+        label.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mousePressed(MouseEvent e){
+                label.setIcon(new ImageIcon("src/icons/"+iconName[2]));
+                label.repaint();
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e){
+                label.setIcon(new ImageIcon("src/icons/"+iconName[0]));
+                label.repaint();                       
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                label.setIcon(new ImageIcon("src/icons/"+iconName[1]));
+                label.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                label.setIcon(new ImageIcon("src/icons/"+iconName[0]));
+                label.repaint();       
+            }
+        });
+    }
+    
+    public static void backLabelActions(JLabel label,Color c1, Color c2, Color c3, Color c4){
+        label.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mousePressed(MouseEvent e){
+                label.setForeground(c1);
+                label.repaint();
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e){
+                label.setForeground(c2);  
+                label.repaint();
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                label.setForeground(c3);
+                label.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                label.setForeground(c4);     
+                label.repaint();
+            }
+        });
+    }
+    
     public static boolean validateAge(JDateChooser dateChooser) {
         Date selectedDate = dateChooser.getDate();
 

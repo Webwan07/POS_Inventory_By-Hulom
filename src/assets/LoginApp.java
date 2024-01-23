@@ -1,29 +1,45 @@
 package assets;
 
-import com.formdev.flatlaf.IntelliJTheme;
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamResolution;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
 import database.AppManagement;
-import database.DbConnection;
 import database.UserManagement;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.sql.SQLException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import main.MainApp;
 
 @Author("Josuan Leonardo Hulom")
-public class LoginApp extends javax.swing.JFrame {
+public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFactory{
     private final UserManagement userManagement = new UserManagement(this);
+
+    private WebcamPanel panel = null;
+    private Webcam webcam = null;
+    private Executor executor = Executors.newSingleThreadExecutor(this);    
+    
     public LoginApp() {
         Image appIcon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/loginPage.png"));
         this.setIconImage(appIcon);
         
         initComponents();
-        
-        
-        System.out.println(loginBtn.getLocation());
+        Utilities.backLabelActions(jLabel2, Helper.colors[6],Helper.fontColors[0],Helper.colors[3],Helper.fontColors[0]);
     }
 
     @SuppressWarnings("unchecked")
@@ -38,6 +54,10 @@ public class LoginApp extends javax.swing.JFrame {
         loginBtn = new customComponents.ButtonRound();
         panelRound2 = new customComponents.PanelRound();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        panel2 = new javax.swing.JPanel();
+        camscreen = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -124,7 +144,7 @@ public class LoginApp extends javax.swing.JFrame {
                 .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(54, 54, 54)
                 .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         panelRound2.setBackground(new java.awt.Color(79, 70, 229));
@@ -136,13 +156,28 @@ public class LoginApp extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("LOG IN");
 
+        jLabel2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/qr-code.png"))); // NOI18N
+        jLabel2.setText("Log in using QR code");
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelRound2Layout = new javax.swing.GroupLayout(panelRound2);
         panelRound2.setLayout(panelRound2Layout);
         panelRound2Layout.setHorizontalGroup(
             panelRound2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRound2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+                .addGroup(panelRound2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panelRound2Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 2, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelRound2Layout.setVerticalGroup(
@@ -150,6 +185,8 @@ public class LoginApp extends javax.swing.JFrame {
             .addGroup(panelRound2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -162,7 +199,7 @@ public class LoginApp extends javax.swing.JFrame {
                 .addComponent(panelRound1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(panelRound2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
         panel1Layout.setVerticalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -171,10 +208,40 @@ public class LoginApp extends javax.swing.JFrame {
                 .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(panelRound1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelRound2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         layere1.add(panel1, "card2");
+
+        camscreen.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/back2.png"))); // NOI18N
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panel2Layout = new javax.swing.GroupLayout(panel2);
+        panel2.setLayout(panel2Layout);
+        panel2Layout.setHorizontalGroup(
+            panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(camscreen, javax.swing.GroupLayout.PREFERRED_SIZE, 643, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(panel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        panel2Layout.setVerticalGroup(
+            panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(camscreen, javax.swing.GroupLayout.PREFERRED_SIZE, 427, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        layere1.add(panel2, "card3");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -262,6 +329,17 @@ public class LoginApp extends javax.swing.JFrame {
             loginBtn.setLocation(new Point(112, 295));
         }
     }//GEN-LAST:event_passwordFieldKeyReleased
+  
+    private volatile boolean scanning = true;
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+        Utilities.switchPanel(layere1, panel2);
+        initWebcam();
+    }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+        Utilities.switchPanel(layere1, panel1);
+        webcam.close();
+    }//GEN-LAST:event_jLabel3MouseClicked
 
     private void loginMethod(String username, String password) throws SQLException{
         short result = userManagement.checkUserCredentials(username, password);
@@ -271,8 +349,7 @@ public class LoginApp extends javax.swing.JFrame {
                 String current_user = userManagement.getUserId(username, password);
                 String get_fname = userManagement.getFName(current_user);
                 JOptionPane.showMessageDialog(this, "Welcome "+get_fname,"Login successful",JOptionPane.INFORMATION_MESSAGE);
-                AppManagement.setCurrentUser(current_user, this);
-                System.out.println("Current user: "+current_user);            
+                AppManagement.setCurrentUser(current_user, this);         
                 
                 MainApp newApp = new MainApp();    
                 newApp.setVisible(true);
@@ -291,20 +368,98 @@ public class LoginApp extends javax.swing.JFrame {
         }       
     }
     
-    public static void main(String args[]) {
-        IntelliJTheme.setup(LoginApp.class.getResourceAsStream("/theme_eclipse.theme.json"));
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new LoginApp().setVisible(true);
+    private boolean loginMethod(String useid) throws SQLException{
+        short result = userManagement.checkUserCredentials(useid);
+
+        switch (result) {
+            case 1:
+                String current_id = useid;
+                String get_fname = userManagement.getFName(current_id);
+                JOptionPane.showMessageDialog(this, "Welcome "+get_fname,"Login successful",JOptionPane.INFORMATION_MESSAGE);
+                AppManagement.setCurrentUser(current_id, this);           
+                
+                MainApp newApp = new MainApp();    
+                newApp.setVisible(true);
+                webcam.close();
+                this.dispose();
+                return true;
+            case 0:
+                JOptionPane.showMessageDialog(this, "User ID is not found");
+                break;
+            default:
+                JOptionPane.showMessageDialog(this, "Invalid User ID");
+                break;
+        }     
+        return false;
+    }
+    
+    private void initWebcam(){
+        Dimension size = WebcamResolution.QVGA.getSize();
+        webcam = Webcam.getWebcams().get(0);
+        webcam.setViewSize(size);
+        panel = new WebcamPanel(webcam);
+        panel.setPreferredSize(size);
+        camscreen.add(panel,new org.netbeans.lib.awtextra.AbsoluteConstraints( 0,0,643,464));
+        executor.execute(this);
+    }
+    
+    @Override
+    public void run() {
+        do {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {}
+
+            Result result = null;
+            BufferedImage image = null;
+
+            if (webcam.isOpen()) {
+                image = webcam.getImage();
             }
-        });
+
+            if (image != null) {
+                LuminanceSource source = new BufferedImageLuminanceSource(image);
+                BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+                try {
+                    result = new MultiFormatReader().decode(bitmap);
+                } catch (NotFoundException ex) {}
+
+                if (result != null) {
+                    String get_id = result.getText();
+                    try {
+                        if(loginMethod(get_id)){
+                            break;
+                        }
+                    } catch (SQLException e) {
+                        JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+            
+            if (!scanning) {
+                break;
+            }
+        } while (true);
     }
 
+    
+    @Override
+    public Thread newThread(Runnable r){
+        Thread t = new Thread(r,"My Thread");
+        t.setDaemon(true);
+        return t;
+    }
+                          
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel camscreen;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLayeredPane layere1;
     private customComponents.ButtonRound loginBtn;
     private javax.swing.JPanel panel1;
+    private javax.swing.JPanel panel2;
     private customComponents.PanelRound panelRound1;
     private customComponents.PanelRound panelRound2;
     private customComponents.PasswordField passwordField;
