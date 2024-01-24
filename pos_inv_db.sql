@@ -1,0 +1,247 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Jan 24, 2024 at 04:23 AM
+-- Server version: 8.1.0
+-- PHP Version: 8.2.4
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `pos_inv_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `apptable`
+--
+
+CREATE TABLE `apptable` (
+  `appID` int NOT NULL,
+  `currentUser` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `apptable`
+--
+
+INSERT INTO `apptable` (`appID`, `currentUser`) VALUES
+(1, 'superuser.wan');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `categorytable`
+--
+
+CREATE TABLE `categorytable` (
+  `categoryID` int NOT NULL,
+  `categoryName` varchar(45) NOT NULL,
+  `dateCreated` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `categorytable`
+--
+
+INSERT INTO `categorytable` (`categoryID`, `categoryName`, `dateCreated`) VALUES
+(1, 'Home Consoles', '2022-01-07'),
+(2, 'Portable Consoles', '2022-01-07'),
+(3, 'Desktop PCs', '2022-01-07'),
+(4, 'Laptops', '2022-01-07'),
+(5, 'Components (for DIY builds)', '2022-01-07'),
+(6, 'Keyboards', '2022-01-07'),
+(7, 'Mice', '2022-01-07');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventorytable`
+--
+
+CREATE TABLE `inventorytable` (
+  `productID` int NOT NULL,
+  `Category` varchar(45) NOT NULL,
+  `ProductName` varchar(45) NOT NULL,
+  `Description` varchar(100) NOT NULL,
+  `Quantity` int NOT NULL,
+  `RetailPrice` double NOT NULL,
+  `DateOfPurchase` date NOT NULL,
+  `itemImage` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `inventorytable`
+--
+
+INSERT INTO `inventorytable` (`productID`, `Category`, `ProductName`, `Description`, `Quantity`, `RetailPrice`, `DateOfPurchase`, `itemImage`) VALUES
+(1, 'Home Consoles', 'PlayStation 5', 'Best gaming console 2024', 0, 40000, '2023-01-31', 'playstation5.png'),
+(2, 'Home Consoles', 'Xbox Series X', 'Best gaming console 2022', 593, 28000, '2023-03-08', 'xboxSeriesX.png'),
+(3, 'Desktop PCs', 'Lenovo Legion Tower 5i', 'The best gaming PC for most people', 997, 120000, '2023-04-05', 'LenovoLegionTower5i.png'),
+(4, 'Desktop PCs', 'Acer Predator Orion 7000', 'A premium gaming PC', 699, 240000, '2023-04-29', 'AcerPredatorOrion7000.png'),
+(5, 'Laptops', 'Lenovo Legion Pro 5 Gen 8 16', 'Best mid-range pick', 996, 58000, '2023-05-27', 'no_pic_item.png'),
+(6, 'Laptops', 'ASUS TUF Dash F15', 'The best budget gaming laptop', 998, 45000, '2023-05-29', 'no_pic_item.png'),
+(7, 'Keyboards', 'Razer Pro Type Ultra', 'For a less expensive option', 20999, 6000, '2023-09-19', 'no_pic_item.png'),
+(8, 'Keyboards', 'Royal Kludge RK1', 'The best budget mechanical keyboard', 29993, 1900, '2023-09-22', 'no_pic_item.png'),
+(9, 'Mice', 'Logitech MX Master 3S', 'The best computer mouse we\'ve tested', 41993, 5000, '2023-09-23', 'no_pic_item.png'),
+(10, 'Mice', 'Garuda Gear Hawk 1', 'Best budget Gaming mouse', 35996, 1200, '2023-09-25', 'no_pic_item.png');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `purchasedtable`
+--
+
+CREATE TABLE `purchasedtable` (
+  `invoiceNumber` varchar(12) DEFAULT NULL,
+  `product` varchar(45) DEFAULT NULL,
+  `discountPercent` float DEFAULT NULL,
+  `quantity` int DEFAULT NULL,
+  `subtotal` double DEFAULT NULL,
+  `total` double DEFAULT NULL,
+  `purchasedDate` date DEFAULT NULL,
+  `sellerfname` varchar(45) DEFAULT NULL,
+  `sellerlname` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `purchasedtable`
+--
+
+INSERT INTO `purchasedtable` (`invoiceNumber`, `product`, `discountPercent`, `quantity`, `subtotal`, `total`, `purchasedDate`, `sellerfname`, `sellerlname`) VALUES
+('b7218505.wan', 'Acer Predator Orion 7000', 0.2, 1, 240000, 192000, '2023-01-01', 'josuan leonardo', 'hulom'),
+('29f71a4f.wan', 'Lenovo Legion Tower 5i', 0.5, 2, 240000, 120000, '2023-01-15', 'josuan leonardo', 'hulom'),
+('2322e6de.wan', 'Nintendo Switch Lite', 0.2, 5, 60000, 48000, '2023-01-29', 'ethel', 'densing'),
+('eca3d77f.wan', 'Garuda Gear Hawk 1', 0, 3, 3600, 3600, '2023-02-01', 'ethel', 'densing'),
+('eca3d77f.wan', 'Logitech MX Master 3S', 0, 6, 30000, 30000, '2023-02-15', 'ethel', 'densing'),
+('eca3d77f.wan', 'Razer Basilisk V3', 0, 8, 36000, 36000, '2023-02-28', 'ethel', 'densing'),
+('9e7db2b4.wan', 'Acer Chromebook 516 GE', 0.3, 2, 116000, 81200, '2023-03-01', 'ethel', 'densing'),
+('9e7db2b4.wan', 'Lenovo Legion Pro 5 Gen 8 16', 0, 3, 174000, 174000, '2023-03-15', 'ethel', 'densing'),
+('358057ff.wan', 'PlayStation Vita', 0, 3, 45000, 45000, '2023-03-29', 'ethel', 'densing'),
+('358057ff.wan', 'PlayStation 5', 0.2, 4, 160000, 128000, '2023-04-01', 'ethel', 'densing'),
+('358057ff.wan', 'Xbox Series X', 0.1, 3, 84000, 75600, '2023-04-15', 'ethel', 'densing'),
+('ec7f297e.wan', 'PlayStation Vita', 0.1, 1, 15000, 13500, '2023-04-29', 'kyla jade', 'agua'),
+('ec7f297e.wan', 'Xbox Series X', 0.1, 2, 56000, 50400, '2023-05-01', 'kyla jade', 'agua'),
+('ec7f297e.wan', 'Lenovo IdeaPad Gaming 3', 0.1, 2, 126000, 113400, '2023-05-15', 'kyla jade', 'agua'),
+('f80c92fa.wan', 'PlayStation Vita', 0.1, 1, 15000, 13500, '2023-05-29', 'kyla jade', 'agua'),
+('f80c92fa.wan', 'Royal Kludge RK1', 0.2, 7, 13300, 10640, '2023-06-01', 'kyla jade', 'agua'),
+('f80c92fa.wan', 'Nintendo Switch Lite', 0.1, 2, 24000, 21600, '2023-06-15', 'kyla jade', 'agua'),
+('f80c92fa.wan', 'ASUS TUF Dash F15', 0.1, 2, 90000, 81000, '2023-06-29', 'kyla jade', 'agua'),
+('f80c92fa.wan', 'Samsung 990 Pro', 0.1, 1, 13900, 12510, '2023-07-01', 'kyla jade', 'agua'),
+('f80c92fa.wan', 'ASRock Z790 Taichi Lite', 0.1, 1, 21000, 18900, '2023-07-15', 'kyla jade', 'agua'),
+('f80c92fa.wan', 'Nvidia GeForce RTX 4070 Ti', 0.1, 1, 34000, 30600, '2023-08-01', 'kyla jade', 'agua'),
+('185d39f2.wan', 'AMD Ryzen 5', 0, 1, 23000, 23000, '2023-08-15', 'kyla jade', 'agua'),
+('185d39f2.wan', 'Garuda Gear Hawk 1', 0, 1, 1200, 1200, '2023-08-29', 'kyla jade', 'agua'),
+('96ce7044.wan', 'PlayStation 4', 0.1, 1, 18000, 16200, '2023-09-01', 'kyla jade', 'agua'),
+('96ce7044.wan', 'Keychron Q6', 0, 1, 7500, 7500, '2023-09-15', 'kyla jade', 'agua'),
+('96ce7044.wan', 'Logitech MX Master 3S', 0, 1, 5000, 5000, '2023-09-29', 'kyla jade', 'agua'),
+('96ce7044.wan', 'Lenovo Legion Tower 5i', 0.1, 1, 120000, 108000, '2023-10-01', 'kyla jade', 'agua'),
+('96ce7044.wan', 'Acer Chromebook 516 GE', 0.1, 1, 58000, 52200, '2023-10-15', 'kyla jade', 'agua'),
+('aabb01fc.wan', 'Lenovo Legion Pro 5 Gen 8 16', 0.1, 1, 58000, 52200, '2023-10-29', 'josuan leonardo', 'hulom'),
+('ec90b8a4.wan', 'Xbox One', 0.1, 2, 40000, 36000, '2023-11-01', 'josuan leonardo', 'hulom'),
+('cac47aaa.wan', 'PlayStation Vita', 0.1, 1, 15000, 13500, '2023-11-15', 'josuan leonardo', 'hulom'),
+('a02788a1.wan', 'Nintendo Switch Lite', 0.1, 1, 12000, 10800, '2023-11-29', 'josuan leonardo', 'hulom'),
+('0a9766c3.wan', 'Xbox One', 0, 1, 20000, 20000, '2023-12-01', 'josuan leonardo', 'hulom'),
+('fabdbbc0.wan', 'Xbox One', 0, 2, 40000, 40000, '2023-12-09', 'josuan leonardo', 'hulom'),
+('0af0dfb8.wan', 'Razer Pro Type Ultra', 0.1, 1, 6000, 5400, '2023-12-12', 'josuan leonardo', 'hulom'),
+('e5be3ff0.wan', 'PlayStation 4', 0.1, 1, 18000, 16200, '2023-12-15', 'josuan leonardo', 'hulom'),
+('32db2b11.wan', 'Xbox Series X', 0.1, 2, 56000, 50400, '2023-12-18', 'josuan leonardo', 'hulom'),
+('6b4138cd.wan', 'Razer Basilisk V3', 0.1, 1, 4500, 4050, '2023-12-20', 'josuan leonardo', 'hulom'),
+('1ed809f7.wan', 'Nintendo 3DS', 0, 1, 8000, 8000, '2023-12-22', 'josuan leonardo', 'hulom'),
+('2dbceb83.wan', 'Lenovo IdeaPad Gaming 3', 0.1, 1, 63000, 56700, '2023-12-29', 'josuan leonardo', 'hulom');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `userstable`
+--
+
+CREATE TABLE `userstable` (
+  `userId` varchar(45) NOT NULL,
+  `firstname` varchar(45) NOT NULL,
+  `lastname` varchar(45) NOT NULL,
+  `username` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `birthdate` date NOT NULL,
+  `gender` varchar(45) NOT NULL,
+  `profileImgPath` varchar(45) NOT NULL,
+  `userType` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `userstable`
+--
+
+INSERT INTO `userstable` (`userId`, `firstname`, `lastname`, `username`, `password`, `birthdate`, `gender`, `profileImgPath`, `userType`) VALUES
+('superuser.wan', 'josuan leonardo', 'hulom', 'admin@231', '123', '2004-02-21', 'Male', 'admin.jpg', 'Admin'),
+('user001.wan', 'ethel', 'densing', 'ethel', '001', '2004-05-07', 'Female', '2023-12-21_ethel.jpg', 'Seller'),
+('user002.wan', 'kyla jade', 'agua', 'kyla', '002', '2004-05-07', 'Female', '2023-12-28_kyla_jade.jpg', 'Seller'),
+('user003.wan', 'kylle', 'alino', 'kylle', '003', '2004-05-07', 'Male', '2023-12-28_kylle.jpg', 'Seller'),
+('user004.wan', 'john marlie', 'compas', 'john_marlie', '004', '2004-05-07', 'Male', '2023-12-28_john_marlie.jpg', 'Seller'),
+('user005.wan', 'angela mae', 'lepiten', 'angela', '005', '2004-05-07', 'Female', '2023-12-28_angela.jpg', 'Seller');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `apptable`
+--
+ALTER TABLE `apptable`
+  ADD PRIMARY KEY (`appID`);
+
+--
+-- Indexes for table `categorytable`
+--
+ALTER TABLE `categorytable`
+  ADD PRIMARY KEY (`categoryID`);
+
+--
+-- Indexes for table `inventorytable`
+--
+ALTER TABLE `inventorytable`
+  ADD PRIMARY KEY (`productID`);
+
+--
+-- Indexes for table `userstable`
+--
+ALTER TABLE `userstable`
+  ADD PRIMARY KEY (`userId`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `apptable`
+--
+ALTER TABLE `apptable`
+  MODIFY `appID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `categorytable`
+--
+ALTER TABLE `categorytable`
+  MODIFY `categoryID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `inventorytable`
+--
+ALTER TABLE `inventorytable`
+  MODIFY `productID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
