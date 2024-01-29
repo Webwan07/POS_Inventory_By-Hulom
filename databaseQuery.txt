@@ -16,11 +16,11 @@ CREATE TABLE `inventorytable` (
   `productID` INT PRIMARY KEY,
   `Category` VARCHAR(45) NOT NULL,
   `ProductName` VARCHAR(45) NOT NULL,
-  `Description` VARCHAR(100) NOT NULL,
+  `Variation` JSON,
   `Quantity` INT NOT NULL,
   `RetailPrice` DOUBLE NOT NULL,
   `DateOfPurchase` DATE NOT NULL,
-  `itemImage` VARCHAR(45) NOT NULL,
+  `ItemImage` VARCHAR(45) NOT NULL
 );
 
 CREATE TABLE `purchasedtable` (

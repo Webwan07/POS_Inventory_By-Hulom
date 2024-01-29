@@ -35,7 +35,7 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
     private Executor executor = Executors.newSingleThreadExecutor(this);    
     
     public LoginApp() {
-        Image appIcon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/loginPage.png"));
+        Image appIcon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/logo/loginPage.png"));
         this.setIconImage(appIcon);
         
         initComponents();
@@ -64,13 +64,13 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
 
         layere1.setLayout(new java.awt.CardLayout());
 
-        panelRound1.setBackground(new java.awt.Color(165, 180, 252));
+        panelRound1.setBackground(new java.awt.Color(218, 136, 136));
         panelRound1.setRoundBottomLeft(25);
         panelRound1.setRoundTopLeft(25);
 
-        usernameTextField.setBackground(new java.awt.Color(165, 180, 252));
+        usernameTextField.setBackground(new java.awt.Color(218, 136, 136));
         usernameTextField.setForeground(new java.awt.Color(255, 255, 255));
-        usernameTextField.setCaretColor(new java.awt.Color(79, 70, 229));
+        usernameTextField.setCaretColor(new java.awt.Color(176, 62, 62));
         usernameTextField.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         usernameTextField.setLabelText("Username");
         usernameTextField.setLineColor(new java.awt.Color(255, 255, 255));
@@ -86,9 +86,9 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
             }
         });
 
-        passwordField.setBackground(new java.awt.Color(165, 180, 252));
+        passwordField.setBackground(new java.awt.Color(218, 136, 136));
         passwordField.setForeground(new java.awt.Color(255, 255, 255));
-        passwordField.setCaretColor(new java.awt.Color(79, 70, 229));
+        passwordField.setCaretColor(new java.awt.Color(176, 62, 62));
         passwordField.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         passwordField.setLabelText("Password");
         passwordField.setLineColor(new java.awt.Color(255, 255, 255));
@@ -105,7 +105,7 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
             }
         });
 
-        loginBtn.setBackground(new java.awt.Color(79, 70, 229));
+        loginBtn.setBackground(new java.awt.Color(176, 62, 62));
         loginBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/login.png"))); // NOI18N
         loginBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -147,7 +147,7 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
                 .addContainerGap(48, Short.MAX_VALUE))
         );
 
-        panelRound2.setBackground(new java.awt.Color(79, 70, 229));
+        panelRound2.setBackground(new java.awt.Color(176, 62, 62));
         panelRound2.setRoundBottomRight(25);
         panelRound2.setRoundTopRight(25);
 

@@ -74,7 +74,7 @@
             <Container class="customComponents.PanelRound" name="panelRound1">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="fc" green="b4" red="a5" type="rgb"/>
+                  <Color blue="88" green="88" red="da" type="rgb"/>
                 </Property>
                 <Property name="roundBottomLeft" type="int" value="25"/>
                 <Property name="roundTopLeft" type="int" value="25"/>
@@ -120,13 +120,13 @@
                 <Component class="customComponents.TextField" name="usernameTextField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="fc" green="b4" red="a5" type="rgb"/>
+                      <Color blue="88" green="88" red="da" type="rgb"/>
                     </Property>
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
                     </Property>
                     <Property name="caretColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="e5" green="46" red="4f" type="rgb"/>
+                      <Color blue="3e" green="3e" red="b0" type="rgb"/>
                     </Property>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Calibri" size="14" style="0"/>
@@ -147,13 +147,13 @@
                 <Component class="customComponents.PasswordField" name="passwordField">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="fc" green="b4" red="a5" type="rgb"/>
+                      <Color blue="88" green="88" red="da" type="rgb"/>
                     </Property>
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="ff" green="ff" red="ff" type="rgb"/>
                     </Property>
                     <Property name="caretColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="e5" green="46" red="4f" type="rgb"/>
+                      <Color blue="3e" green="3e" red="b0" type="rgb"/>
                     </Property>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Calibri" size="14" style="0"/>
@@ -175,7 +175,7 @@
                 <Component class="customComponents.ButtonRound" name="loginBtn">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="e5" green="46" red="4f" type="rgb"/>
+                      <Color blue="3e" green="3e" red="b0" type="rgb"/>
                     </Property>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                       <Image iconType="3" name="/icons/login.png"/>
@@ -191,7 +191,7 @@
             <Container class="customComponents.PanelRound" name="panelRound2">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="e5" green="46" red="4f" type="rgb"/>
+                  <Color blue="3e" green="3e" red="b0" type="rgb"/>
                 </Property>
                 <Property name="roundBottomRight" type="int" value="25"/>
                 <Property name="roundTopRight" type="int" value="25"/>

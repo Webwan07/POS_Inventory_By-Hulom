@@ -24,6 +24,39 @@ public class UserManagement extends DbConnection{
         return date +"_"+ fname + "_wan.jpg";
     } 
     
+    public String userIDGenerator(String user_type) throws SQLException{
+        String query;
+        String id_type;
+        if (user_type.equals(listOfUserType[0])) {
+            query = "SELECT COUNT(*) AS count FROM " + table + " WHERE "+columns[0]+" LIKE 'superuser%'";
+            id_type = "superuser";
+        } else if (user_type.equals(listOfUserType[1])) {
+            query = "SELECT COUNT(*) AS count FROM " + table + " WHERE "+columns[0]+" LIKE 'user%'";
+            id_type = "user";
+        } else {
+            throw new IllegalArgumentException("Invalid user_type: " + user_type);
+        }
+        try {
+            prepare = connection.prepareStatement(query);
+            result = prepare.executeQuery();
+
+            if (result.next()) {
+                int count = result.getInt("count")+1;
+                String userID = String.format(id_type + "%03d.wan", count);
+                return userID;
+            } else {
+                JOptionPane.showMessageDialog(component, "No records found in the table.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        } finally {
+            prepare.close();
+            result.close();
+        }
+        return null;
+    }
+    
     public boolean checkCurrentUser(String value) throws SQLException {
         String query = "SELECT " + columns[0] + " FROM " + table +
                        " WHERE " + columns[0] + " = ?";
@@ -244,6 +277,33 @@ public class UserManagement extends DbConnection{
             prepare.close();
         }
     }  
+    
+    public void addUser(String user_ID, String f_name, String l_name, String u_name, String password, String bdate, String gender, String img_name, String user_type) throws SQLException{
+        String query = "INSERT INTO "+table+" ("+String.join(", ", columns)+") VALUES (?,?,?,?,?,?,?,?,?)";
+        
+        try {
+            prepare = connection.prepareStatement(query);
+            prepare.setString(1, user_ID);
+            prepare.setString(2, f_name);
+            prepare.setString(3, l_name); 
+            prepare.setString(4, u_name); 
+            prepare.setString(5, password); 
+            prepare.setString(6, bdate);
+            prepare.setString(7, gender);
+            prepare.setString(8, img_name);
+            prepare.setString(9,user_type);
+            
+            prepare.executeUpdate();
+        } catch(SQLException e) {
+            if (e.getErrorCode() == 1062) { 
+                JOptionPane.showMessageDialog(component, "User already exists.", "Duplicate Entry", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+            }
+        }finally{
+            prepare.close();
+        }     
+    }
     
     public void DeleteUser(Object ID) throws SQLException {
         String query = "DELETE FROM "+table+" WHERE "+columns[0]+" = ?";

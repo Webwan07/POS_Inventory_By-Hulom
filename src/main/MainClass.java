@@ -3,6 +3,7 @@ package main;
 import com.formdev.flatlaf.IntelliJTheme;
 import org.opencv.core.Core;
 import assets.*;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import database.DbConnection;
 import database.UserManagement;
 import database.AppManagement;
@@ -15,8 +16,8 @@ public class MainClass {
     
     public static void main(String args[]) throws SQLException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        IntelliJTheme.setup(MainApp.class.getResourceAsStream("/theme_eclipse.theme.json"));
-        
+        FlatIntelliJLaf.registerCustomDefaultsSource("style");
+        FlatIntelliJLaf.setup();
         if(dbConnection.isDatabaseConnected()){
             try{
                 String value = AppManagement.getCurrentUser(new MainApp());

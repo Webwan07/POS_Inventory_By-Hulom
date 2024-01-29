@@ -1,15 +1,17 @@
 package database;
 
 import assets.Author;
+import assets.FileManagement;
 import static database.DbConnection.connection;
 import static database.DbConnection.prepare;
 import static database.DbConnection.result;
 import java.awt.Component;
 import java.sql.SQLException;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 @Author("Josuan Leonardo Hulom")
-public class InventoryManagement {
+public class InventoryManagement{
     public final String table = "inventorytable";
     
     public final String[] columns = {"productID","Category","ProductName",
@@ -23,19 +25,16 @@ public class InventoryManagement {
         this.component = component;
     } 
     
-    public String getItemImage(int _id) throws SQLException{
+    public ImageIcon getItemImage(int _id) throws SQLException{
         String query = "SELECT "+columns[7]+" FROM "+table+" WHERE "
                 + columns[0] + " = ?";
-        
         try{
             prepare = connection.prepareStatement(query);
             prepare.setInt(1, _id);
             result = prepare.executeQuery();
-            
             if(result.next()){
-                return result.getString(columns[7]);
+                return new ImageIcon(FileManagement.PROJECT_PACKAGES[1]+"/"+result.getString(columns[7])+".png");
             }
-
         }catch(SQLException e){
             JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{

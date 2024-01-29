@@ -1,18 +1,36 @@
 package assets;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageConfig;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -21,6 +39,10 @@ import javax.swing.JPanel;
 
 @Author("Josuan Leonardo Hulom")
 public class Utilities {
+    public static boolean isEmptyOrSpacesOnly(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+    
     public static void switchPanel(JLayeredPane layered, JPanel panel){
         layered.removeAll();
         layered.add(panel);
@@ -218,4 +240,43 @@ public class Utilities {
         return now.format(formatter);
     }
     
+    
+    public static void generateQRCodeImage(String text, String fileName, String watermark, int width, int height, Component parent_component) {
+        try {
+            Map<EncodeHintType, Object> hintMap = new HashMap<>();
+            hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height, hintMap);
+
+            String userHome = System.getProperty("user.home");
+            String downloadFolder = userHome + "\\Downloads";
+            File directory = new File(downloadFolder);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            String filePath = downloadFolder + "\\" + fileName;
+
+            int onColor = 0xFFC04D4D; 
+            int offColor = 0xFFFFFFFF; 
+            MatrixToImageConfig config = new MatrixToImageConfig(onColor, offColor);
+
+            Path path = FileSystems.getDefault().getPath(filePath);
+            BufferedImage image = MatrixToImageWriter.toBufferedImage(bitMatrix, config);
+            
+            Graphics2D g2d = image.createGraphics();
+            g2d.setColor(Color.BLACK);
+            g2d.setFont(new Font("Calibri", Font.BOLD, 16));
+            int watermarkWidth = g2d.getFontMetrics().stringWidth(watermark);
+            g2d.drawString(watermark, (image.getWidth() - watermarkWidth) / 2, image.getHeight() - 10);
+            g2d.dispose();
+
+            ImageIO.write(image, "PNG", path.toFile());
+
+            String message = "QR Code successfully generated!\nView in download folder now.";
+            JOptionPane.showMessageDialog(parent_component, message, "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (WriterException | IOException e) {
+            String errorMessage = "Unable to generate QR Code:\n" + e.getMessage();
+            JOptionPane.showMessageDialog(parent_component, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }
