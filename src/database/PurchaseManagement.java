@@ -7,14 +7,12 @@ import javax.swing.JOptionPane;
 
 @Author("Josuan Leonardo Hulom")
 public class PurchaseManagement extends DbConnection{
-    private final Component component;
     
-    public final String table = "purchasedtable";
+    public final static String table = "purchasedtable";
     
-    public final String[] columns = {"invoiceNumber","product","discountPercent","quantity","subtotal","total","purchasedDate","sellerfname","sellerlname"};
+    public final static String[] columns = {"invoiceNumber","product","discountPercent","quantity","subtotal","total","purchasedDate","sellerfname","sellerlname"};
     
-    public PurchaseManagement(Component component){
-        this.component = component;
+    public PurchaseManagement(){
     }    
     
     public int sellerTotalSold_Item(String f, String l) throws SQLException {
@@ -29,8 +27,6 @@ public class PurchaseManagement extends DbConnection{
             if (result.next()) {
                 salesVal = result.getInt("totalsold");
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -50,8 +46,6 @@ public class PurchaseManagement extends DbConnection{
             if (result.next()) {
                 salesVal = result.getDouble("totalsold");
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -66,8 +60,6 @@ public class PurchaseManagement extends DbConnection{
             prepare.setString(1, newval);
             prepare.setString(2, oldval);
             prepare.executeUpdate();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
         }

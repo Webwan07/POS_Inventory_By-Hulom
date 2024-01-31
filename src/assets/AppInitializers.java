@@ -7,8 +7,10 @@ public interface AppInitializers {
         init_user();
         init_table();
         init_models();
+        init_dashboard();
     }
     void init_user();
     void init_table();
     void init_models();
+    void init_dashboard();
 }

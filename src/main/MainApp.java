@@ -1,7 +1,7 @@
 package main;
 import assets.*;
-import customComponents.ImageAvatar;
 import database.AppManagement;
+import database.DashboardManagement;
 import database.InventoryManagement;
 import database.PurchaseManagement;
 import database.UserManagement;
@@ -13,9 +13,9 @@ import java.io.File;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
@@ -26,9 +26,10 @@ import javax.swing.table.DefaultTableModel;
 @Author("Josuan Leonardo Hulom")
 public final class MainApp extends javax.swing.JFrame implements AppInitializers, ImageManagement, FileManagement{
     private final UserManagement userManagement = new UserManagement(this);
-    private final PurchaseManagement purchaseManagement = new PurchaseManagement(this);
+    private final PurchaseManagement purchaseManagement = new PurchaseManagement();
+    private final DashboardManagement dashboardManagement = new DashboardManagement();
     private final InventoryManagement inventoryManagement = new InventoryManagement(this);
-   
+    
     public MainApp(){
         Image appIcon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/logo/appLogo2.png"));
         this.setIconImage(appIcon);
@@ -51,7 +52,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             AppManagement.tableData(usersTable,userManagement.table,userManagement.columns);
             AppManagement.tableData(inventoryTable,inventoryManagement.table,inventoryManagement.columns);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -59,6 +60,33 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     public void init_models(){
         SpinnerNumberModel quantitySpinner = new SpinnerNumberModel(0,0,Integer.MAX_VALUE,1);
         inventoryQuantityInput.setModel(quantitySpinner);
+        //CMT.AddElementToComboBox()sd
+        inventoryTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox(new String[]{"test 1","test 2"})));
+        inventoryTable.getColumnModel().getColumn(4).setCellEditor(new Utilities.IntCustomJSpinner());
+        inventoryTable.getColumnModel().getColumn(5).setCellEditor(new Utilities.DoubleCustomJSpinner());  
+    }
+    
+    @Override
+    public void init_dashboard(){
+        try {
+            totalProductsLabel.setText(Integer.toString(dashboardManagement.countProducts()));
+            soldOldLabel.setText(Integer.toString(dashboardManagement.getProductSold()));
+            soldTotayLabel.setText(Integer.toString(dashboardManagement.getProductSoldToday()));
+            outStockLabel.setText(Integer.toString(dashboardManagement.getOutOfStocks()));
+            
+            double getTotalSales = dashboardManagement.getTotalSales();
+            totalSalesLabel.setText(Helper.currency+" "+getTotalSales);
+            totalSalesLabel.setText(Helper.currency+" "+Utilities.formatNumber(getTotalSales));      
+            totalSalesLabel.setToolTipText(Helper.currency+" "+getTotalSales);
+            
+            double getTotalSalesToday = dashboardManagement.getTotalSalesToday();
+            todaysalesLabel.setText(Helper.currency+" "+getTotalSalesToday);
+            todaysalesLabel.setText(Helper.currency+" "+Utilities.formatNumber(getTotalSalesToday));
+            todaysalesLabel.setToolTipText(Helper.currency+" "+getTotalSalesToday);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     @Override
@@ -99,7 +127,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 setImageToAvatar(imageAvatar1,get_image); 
             }
         }catch(SQLException e){
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -118,7 +146,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 userTotalSalesLabel.setText(Utilities.formatNumber(get_sold));
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -139,7 +167,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    dashboardBtn.setBackground(Helper.colors[5]);
+                    dashboardBtn.setBackground(Helper.colors[4]);
                 }
             });
             usersBtn.addMouseListener(new MouseAdapter() {
@@ -149,7 +177,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    usersBtn.setBackground(Helper.colors[5]);
+                    usersBtn.setBackground(Helper.colors[4]);
                 }
             });
             inventoryBtn.addMouseListener(new MouseAdapter() {
@@ -159,7 +187,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    inventoryBtn.setBackground(Helper.colors[5]);
+                    inventoryBtn.setBackground(Helper.colors[4]);
                 }
             });
             categoryBtn.addMouseListener(new MouseAdapter() {
@@ -169,7 +197,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    categoryBtn.setBackground(Helper.colors[5]);
+                    categoryBtn.setBackground(Helper.colors[4]);
                 }
             });
             salesBtn.addMouseListener(new MouseAdapter() {
@@ -179,7 +207,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    salesBtn.setBackground(Helper.colors[5]);
+                    salesBtn.setBackground(Helper.colors[4]);
                 }
             });
             returnItemBtn.addMouseListener(new MouseAdapter() {
@@ -189,7 +217,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    returnItemBtn.setBackground(Helper.colors[5]);
+                    returnItemBtn.setBackground(Helper.colors[4]);
                 }
             });
             priceListBtn.addMouseListener(new MouseAdapter() {
@@ -199,7 +227,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    priceListBtn.setBackground(Helper.colors[5]);
+                    priceListBtn.setBackground(Helper.colors[4]);
                 }
             });
             reportBtn.addMouseListener(new MouseAdapter() {
@@ -209,7 +237,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    reportBtn.setBackground(Helper.colors[5]);
+                    reportBtn.setBackground(Helper.colors[4]);
                 }
             });    
             logoutBtn.addMouseListener(new MouseAdapter() {
@@ -219,7 +247,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    logoutBtn.setBackground(Helper.colors[5]);
+                    logoutBtn.setBackground(Helper.colors[4]);
                 }
             });  
             dashboardBtn1.addMouseListener(new MouseAdapter() {
@@ -229,7 +257,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    dashboardBtn1.setBackground(Helper.colors[5]);
+                    dashboardBtn1.setBackground(Helper.colors[4]);
                 }
             });
             usersBtn1.addMouseListener(new MouseAdapter() {
@@ -239,7 +267,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    usersBtn1.setBackground(Helper.colors[5]);
+                    usersBtn1.setBackground(Helper.colors[4]);
                 }
             });  
             salesBtn1.addMouseListener(new MouseAdapter() {
@@ -249,7 +277,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    salesBtn1.setBackground(Helper.colors[5]);
+                    salesBtn1.setBackground(Helper.colors[4]);
                 }
             });
             returnItemBtn1.addMouseListener(new MouseAdapter() {
@@ -259,7 +287,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    returnItemBtn1.setBackground(Helper.colors[5]);
+                    returnItemBtn1.setBackground(Helper.colors[4]);
                 }
             });
             priceListBtn1.addMouseListener(new MouseAdapter() {
@@ -269,7 +297,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    priceListBtn1.setBackground(Helper.colors[5]);
+                    priceListBtn1.setBackground(Helper.colors[4]);
                 }
             });
             logoutBtn1.addMouseListener(new MouseAdapter() {
@@ -279,7 +307,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 }
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    logoutBtn1.setBackground(Helper.colors[5]);
+                    logoutBtn1.setBackground(Helper.colors[4]);
                 }
             }); 
         }
@@ -291,7 +319,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             new LoginApp().setVisible(true);
             this.dispose();
         }catch(SQLException e){
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }
     }
     @SuppressWarnings("unchecked")
@@ -367,6 +395,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         panelRound10 = new customComponents.PanelRound();
         jLabel9 = new javax.swing.JLabel();
         userTotalSalesLabel = new javax.swing.JLabel();
+        changeProfileBtn = new customComponents.ButtonRound();
         inventoryPanel = new customComponents.PanelRound();
         inventoryScrollPane = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
@@ -400,7 +429,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         todeleteVariant = new javax.swing.JComboBox<>();
         categoryPanel = new customComponents.PanelRound();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        CategoryTable = new javax.swing.JTable();
         panelRound14 = new customComponents.PanelRound();
         jLabel36 = new javax.swing.JLabel();
         jTextField7 = new javax.swing.JTextField();
@@ -455,7 +484,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         adminMenu.setBackground(new java.awt.Color(160, 47, 47));
         adminMenu.setRoundTopRight(50);
 
-        dashboardBtn.setBackground(new java.awt.Color(160, 47, 47));
+        dashboardBtn.setBackground(new java.awt.Color(176, 62, 62));
         dashboardBtn.setForeground(new java.awt.Color(255, 255, 255));
         dashboardBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/dashboard.png"))); // NOI18N
         dashboardBtn.setText("Dashboard");
@@ -468,7 +497,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        usersBtn.setBackground(new java.awt.Color(160, 47, 47));
+        usersBtn.setBackground(new java.awt.Color(176, 62, 62));
         usersBtn.setForeground(new java.awt.Color(255, 255, 255));
         usersBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/user.png"))); // NOI18N
         usersBtn.setText("Users");
@@ -481,7 +510,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        inventoryBtn.setBackground(new java.awt.Color(160, 47, 47));
+        inventoryBtn.setBackground(new java.awt.Color(176, 62, 62));
         inventoryBtn.setForeground(new java.awt.Color(255, 255, 255));
         inventoryBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/inventory.png"))); // NOI18N
         inventoryBtn.setText("Inventory");
@@ -494,7 +523,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        categoryBtn.setBackground(new java.awt.Color(160, 47, 47));
+        categoryBtn.setBackground(new java.awt.Color(176, 62, 62));
         categoryBtn.setForeground(new java.awt.Color(255, 255, 255));
         categoryBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/category.png"))); // NOI18N
         categoryBtn.setText("Category");
@@ -507,7 +536,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        salesBtn.setBackground(new java.awt.Color(160, 47, 47));
+        salesBtn.setBackground(new java.awt.Color(176, 62, 62));
         salesBtn.setForeground(new java.awt.Color(255, 255, 255));
         salesBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/sales.png"))); // NOI18N
         salesBtn.setText("Sales");
@@ -520,7 +549,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        returnItemBtn.setBackground(new java.awt.Color(160, 47, 47));
+        returnItemBtn.setBackground(new java.awt.Color(176, 62, 62));
         returnItemBtn.setForeground(new java.awt.Color(255, 255, 255));
         returnItemBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/returnitem.png"))); // NOI18N
         returnItemBtn.setText("Return Item");
@@ -533,7 +562,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        priceListBtn.setBackground(new java.awt.Color(160, 47, 47));
+        priceListBtn.setBackground(new java.awt.Color(176, 62, 62));
         priceListBtn.setForeground(new java.awt.Color(255, 255, 255));
         priceListBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/pricelist.png"))); // NOI18N
         priceListBtn.setText("Price List");
@@ -546,7 +575,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        reportBtn.setBackground(new java.awt.Color(160, 47, 47));
+        reportBtn.setBackground(new java.awt.Color(176, 62, 62));
         reportBtn.setForeground(new java.awt.Color(255, 255, 255));
         reportBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/report.png"))); // NOI18N
         reportBtn.setText("Report");
@@ -559,7 +588,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        logoutBtn.setBackground(new java.awt.Color(160, 47, 47));
+        logoutBtn.setBackground(new java.awt.Color(176, 62, 62));
         logoutBtn.setForeground(new java.awt.Color(255, 255, 255));
         logoutBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logout.png"))); // NOI18N
         logoutBtn.setText("Log Out");
@@ -572,6 +601,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
+        pictureBox1.setToolTipText("(CRMC) College of Computer Studies");
         pictureBox1.setImage(new javax.swing.ImageIcon(getClass().getResource("/logo/appLogo.png"))); // NOI18N
         pictureBox1.setOpaque(false);
 
@@ -624,7 +654,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 .addComponent(pictureBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(jLabel18)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(dashboardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(usersBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -640,7 +670,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 .addComponent(priceListBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(reportBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addComponent(logoutBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -650,7 +680,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         sellerMenu.setBackground(new java.awt.Color(160, 47, 47));
         sellerMenu.setRoundTopRight(50);
 
-        dashboardBtn1.setBackground(new java.awt.Color(160, 47, 47));
+        dashboardBtn1.setBackground(new java.awt.Color(176, 62, 62));
         dashboardBtn1.setForeground(new java.awt.Color(255, 255, 255));
         dashboardBtn1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/dashboard.png"))); // NOI18N
         dashboardBtn1.setText("Dashboard");
@@ -663,7 +693,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        usersBtn1.setBackground(new java.awt.Color(160, 47, 47));
+        usersBtn1.setBackground(new java.awt.Color(176, 62, 62));
         usersBtn1.setForeground(new java.awt.Color(255, 255, 255));
         usersBtn1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/user.png"))); // NOI18N
         usersBtn1.setText("Users");
@@ -676,7 +706,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        salesBtn1.setBackground(new java.awt.Color(160, 47, 47));
+        salesBtn1.setBackground(new java.awt.Color(176, 62, 62));
         salesBtn1.setForeground(new java.awt.Color(255, 255, 255));
         salesBtn1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/sales.png"))); // NOI18N
         salesBtn1.setText("Sales");
@@ -689,7 +719,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        returnItemBtn1.setBackground(new java.awt.Color(160, 47, 47));
+        returnItemBtn1.setBackground(new java.awt.Color(176, 62, 62));
         returnItemBtn1.setForeground(new java.awt.Color(255, 255, 255));
         returnItemBtn1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/returnitem.png"))); // NOI18N
         returnItemBtn1.setText("Return Item");
@@ -702,7 +732,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        priceListBtn1.setBackground(new java.awt.Color(160, 47, 47));
+        priceListBtn1.setBackground(new java.awt.Color(176, 62, 62));
         priceListBtn1.setForeground(new java.awt.Color(255, 255, 255));
         priceListBtn1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/pricelist.png"))); // NOI18N
         priceListBtn1.setText("Price List");
@@ -715,7 +745,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
-        logoutBtn1.setBackground(new java.awt.Color(160, 47, 47));
+        logoutBtn1.setBackground(new java.awt.Color(176, 62, 62));
         logoutBtn1.setForeground(new java.awt.Color(255, 255, 255));
         logoutBtn1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logout.png"))); // NOI18N
         logoutBtn1.setText("Log Out");
@@ -728,6 +758,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         });
 
+        pictureBox3.setToolTipText("(CRMC) College of Computer Studies");
         pictureBox3.setImage(new javax.swing.ImageIcon(getClass().getResource("/logo/appLogo.png"))); // NOI18N
         pictureBox3.setOpaque(false);
 
@@ -777,7 +808,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 .addComponent(pictureBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(jLabel19)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
                 .addComponent(dashboardBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(usersBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -787,7 +818,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 .addComponent(returnItemBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(priceListBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 166, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 154, Short.MAX_VALUE)
                 .addComponent(logoutBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1228,7 +1259,8 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
 
         adminBtn.setBackground(new java.awt.Color(176, 62, 62));
         adminBtn.setForeground(new java.awt.Color(255, 255, 255));
-        adminBtn.setText("Admin Panel");
+        adminBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/adminConfig.png"))); // NOI18N
+        adminBtn.setText("Admin Config");
         adminBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 adminBtnActionPerformed(evt);
@@ -1242,16 +1274,16 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             .addGroup(panelRound1Layout.createSequentialGroup()
                 .addGroup(panelRound1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelRound1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(usernameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panelRound1Layout.createSequentialGroup()
                         .addGap(20, 20, 20)
                         .addComponent(imageAvatar1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 14, Short.MAX_VALUE)))
+                        .addGap(0, 14, Short.MAX_VALUE))
+                    .addGroup(panelRound1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(usernameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(panelRound1Layout.createSequentialGroup()
-                .addGap(52, 52, 52)
-                .addComponent(adminBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41)
+                .addComponent(adminBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelRound1Layout.setVerticalGroup(
@@ -1261,9 +1293,9 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 .addComponent(imageAvatar1, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 270, Short.MAX_VALUE)
-                .addComponent(adminBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(adminBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30))
         );
 
         panelRound5.setBackground(new java.awt.Color(218, 136, 136));
@@ -1424,6 +1456,16 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 .addContainerGap())
         );
 
+        changeProfileBtn.setBackground(new java.awt.Color(176, 62, 62));
+        changeProfileBtn.setForeground(new java.awt.Color(255, 255, 255));
+        changeProfileBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/change.png"))); // NOI18N
+        changeProfileBtn.setText("Change Profile Picture");
+        changeProfileBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeProfileBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelRound5Layout = new javax.swing.GroupLayout(panelRound5);
         panelRound5.setLayout(panelRound5Layout);
         panelRound5Layout.setHorizontalGroup(
@@ -1438,8 +1480,9 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                     .addGroup(panelRound5Layout.createSequentialGroup()
                         .addGroup(panelRound5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(d9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(d2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(d2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(changeProfileBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 374, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelRound5Layout.setVerticalGroup(
@@ -1455,7 +1498,9 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 .addComponent(d2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(d9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
+                .addComponent(changeProfileBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout usersPanelLayout = new javax.swing.GroupLayout(usersPanel);
@@ -1603,6 +1648,11 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
 
         inventoryImgDisplay.setImage(new javax.swing.ImageIcon(getClass().getResource("/item_images/no_pic_item.png"))); // NOI18N
         inventoryImgDisplay.setOpaque(false);
+        inventoryImgDisplay.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inventoryImgDisplayMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout inventoryImgDisplayLayout = new javax.swing.GroupLayout(inventoryImgDisplay);
         inventoryImgDisplay.setLayout(inventoryImgDisplayLayout);
@@ -1615,9 +1665,10 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             .addGap(0, 180, Short.MAX_VALUE)
         );
 
-        inventoryTable.setBackground(new java.awt.Color(245, 205, 205));
+        inventoryTable.setBackground(new java.awt.Color(218, 136, 136));
+        inventoryTable.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         inventoryTable.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        inventoryTable.setForeground(new java.awt.Color(51, 51, 51));
+        inventoryTable.setForeground(new java.awt.Color(255, 255, 255));
         inventoryTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1627,14 +1678,15 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, false, true, true, true, true
+                false, true, true, true, true, true, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        inventoryTable.setSelectionBackground(new java.awt.Color(218, 136, 136));
+        inventoryTable.setSelectionBackground(new java.awt.Color(245, 205, 205));
+        inventoryTable.setSelectionForeground(new java.awt.Color(96, 0, 0));
         inventoryTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 inventoryTableMouseClicked(evt);
@@ -1651,6 +1703,11 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         jButton8.setForeground(new java.awt.Color(51, 51, 51));
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/edit.png"))); // NOI18N
         jButton8.setText("Edit");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         jButton9.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jButton9.setForeground(new java.awt.Color(51, 51, 51));
@@ -1810,10 +1867,10 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         categoryPanel.setBackground(new java.awt.Color(245, 205, 205));
         categoryPanel.setRoundTopLeft(50);
 
-        jTable1.setBackground(new java.awt.Color(245, 205, 205));
-        jTable1.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        jTable1.setForeground(new java.awt.Color(51, 51, 51));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        CategoryTable.setBackground(new java.awt.Color(218, 136, 136));
+        CategoryTable.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        CategoryTable.setForeground(new java.awt.Color(255, 255, 255));
+        CategoryTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -1824,7 +1881,9 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane2.setViewportView(jTable1);
+        CategoryTable.setSelectionBackground(new java.awt.Color(245, 205, 205));
+        CategoryTable.setSelectionForeground(new java.awt.Color(96, 0, 0));
+        jScrollPane2.setViewportView(CategoryTable);
 
         panelRound14.setBackground(new java.awt.Color(218, 136, 136));
         panelRound14.setRoundBottomLeft(25);
@@ -2026,8 +2085,10 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
         panelRound13.setRoundTopLeft(25);
         panelRound13.setRoundTopRight(25);
 
-        usersTable.setBackground(new java.awt.Color(245, 205, 205));
+        usersTable.setBackground(new java.awt.Color(218, 136, 136));
+        usersTable.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         usersTable.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        usersTable.setForeground(new java.awt.Color(51, 51, 51));
         usersTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -2044,6 +2105,8 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 return canEdit [columnIndex];
             }
         });
+        usersTable.setSelectionBackground(new java.awt.Color(245, 205, 205));
+        usersTable.setSelectionForeground(new java.awt.Color(96, 0, 0));
         usersTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 usersTableMouseClicked(evt);
@@ -2421,21 +2484,19 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             switch(get_selectedColumn){
                 case 0:
                     if (evt.getClickCount() == 2){
-                        
                         String userInput = (String) JOptionPane.showInputDialog(
-                            this,
-                            "",
-                            "",
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            new String[]{"Delete User","Generate User QR Code"},
-                            "Delete User");                        
-                        
+                                this,
+                                "",
+                                "",
+                                JOptionPane.QUESTION_MESSAGE,
+                                null,
+                                new String[]{"Delete User","Generate User QR Code"},
+                                "Delete User");        
                         up_get_id = get_TableRecordID(usersTable);
-                        String get_fName = usersTable.getValueAt(usersTable.getSelectedRow(), 1).toString();
-                        
+                            String get_fName = usersTable.getValueAt(usersTable.getSelectedRow(), 1).toString();
+
                         DefaultTableModel to_delete = (DefaultTableModel) usersTable.getModel();
-             
+
                         if (userInput.equals("Delete User")) {
                             try {
                                 int getSelectedRow = usersTable.getSelectedRow();
@@ -2449,130 +2510,141 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                             }
                         }else if(userInput.equals("Generate User QR Code")){
-                            Utilities.generateQRCodeImage(up_get_id.toString(), get_fName.replaceAll(" ", "_")+"_QRCode.png", get_fName.toUpperCase(),350, 350,this);
+                            Utilities.generateQRCodeImage(up_get_id.toString(), get_fName.replaceAll(" ", "_")+"_QRCode.png",350, 350,this);
                         }
                     }
                     break;
                 case 1:
                     up_get_id = get_TableRecordID(usersTable);
-                    do{
-                        new_val = JOptionPane.showInputDialog(this, "Enter new firstname for user "+up_get_id+":", "Change Firstname", JOptionPane.QUESTION_MESSAGE).toLowerCase();
-                        if(Utilities.containsNumbers(new_val)){
-                            JOptionPane.showMessageDialog(this, "First name can only contain letters", "Invalid Firstname", JOptionPane.ERROR_MESSAGE);
-                            updatableUserData();
-                        }
-                    }while(Utilities.containsNumbers(new_val));
-                    
-                    if(new_val != null && up_get_id != null){
-                        String fnameOld = usersTable.getValueAt(usersTable.getSelectedRow(), 1).toString();
-                        if(changeStringData(new_val,up_get_id,1)){
-                            purchaseManagement.updateSellerName(fnameOld, new_val,7);
-                            JOptionPane.showMessageDialog(this, "Change Successfully", "Firstname", JOptionPane.INFORMATION_MESSAGE);
-                            updatableUserData();
+                    if(evt.getClickCount() == 2){
+                        do{
+                            new_val = JOptionPane.showInputDialog(this, "Enter new firstname for user "+up_get_id+":", "Change Firstname", JOptionPane.QUESTION_MESSAGE).toLowerCase();
+                            if(Utilities.containsNumbers(new_val)){
+                                JOptionPane.showMessageDialog(this, "First name can only contain letters", "Invalid Firstname", JOptionPane.ERROR_MESSAGE);
+                                updatableUserData();
+                            }
+                        }while(Utilities.containsNumbers(new_val));
+
+                        if(new_val != null && up_get_id != null){
+                            String fnameOld = usersTable.getValueAt(usersTable.getSelectedRow(), 1).toString();
+                            if(changeStringData(new_val,up_get_id,1)){
+                                purchaseManagement.updateSellerName(fnameOld, new_val,7);
+                                JOptionPane.showMessageDialog(this, "Change Successfully", "Firstname", JOptionPane.INFORMATION_MESSAGE);
+                                updatableUserData();
+                            }
                         }
                     }
                     break;
                 case 2:
                     up_get_id = get_TableRecordID(usersTable);
-                    do{
-                        new_val = JOptionPane.showInputDialog(this, "Enter new lastname for user "+up_get_id+":", "Change Lastname", JOptionPane.QUESTION_MESSAGE);
-                        if(Utilities.containsNumbers(new_val)){
-                            JOptionPane.showMessageDialog(this, "Last name can only contain letters", "Invalid Lastname", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }while(Utilities.containsNumbers(new_val));
-                    
-                    if(new_val != null && up_get_id != null){
-                        String lnameOld = usersTable.getValueAt(usersTable.getSelectedRow(), 2).toString();
-                        if(changeStringData(new_val,up_get_id,2)){
-                            purchaseManagement.updateSellerName(lnameOld, new_val,8);
-                            JOptionPane.showMessageDialog(this, "Change Successfully", "Lastname", JOptionPane.INFORMATION_MESSAGE);
-                            updatableUserData();
+                    if(evt.getClickCount() == 2){
+                        do{
+                            new_val = JOptionPane.showInputDialog(this, "Enter new lastname for user "+up_get_id+":", "Change Lastname", JOptionPane.QUESTION_MESSAGE);
+                            if(Utilities.containsNumbers(new_val)){
+                                JOptionPane.showMessageDialog(this, "Last name can only contain letters", "Invalid Lastname", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }while(Utilities.containsNumbers(new_val));
+
+                        if(new_val != null && up_get_id != null){
+                            String lnameOld = usersTable.getValueAt(usersTable.getSelectedRow(), 2).toString();
+                            if(changeStringData(new_val,up_get_id,2)){
+                                purchaseManagement.updateSellerName(lnameOld, new_val,8);
+                                JOptionPane.showMessageDialog(this, "Change Successfully", "Lastname", JOptionPane.INFORMATION_MESSAGE);
+                                updatableUserData();
+                            }
                         }
                     }
                     break;
                 case 3:
                     up_get_id = get_TableRecordID(usersTable);
-                    do{
-                        new_val = JOptionPane.showInputDialog(this, "Enter new username for user "+up_get_id+":", "Change Username", JOptionPane.QUESTION_MESSAGE);
-                        if(!Utilities.validateUsername(new_val)){
-                            JOptionPane.showMessageDialog(this, "Username must follow the pattern: ^[a-zA-Z]+@[0-9]+$", "Invalid Username", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }while(!Utilities.validateUsername(new_val));
-                    
-                    if(new_val != null && up_get_id != null){
-                        if(changeStringData(new_val,up_get_id,3)){
-                                JOptionPane.showMessageDialog(this, "Change Successfully", "Username", JOptionPane.INFORMATION_MESSAGE);
+                    if(evt.getClickCount() == 2){
+                        do{
+                            new_val = JOptionPane.showInputDialog(this, "Enter new username for user "+up_get_id+":", "Change Username", JOptionPane.QUESTION_MESSAGE);
+                            if(!Utilities.validateUsername(new_val)){
+                                JOptionPane.showMessageDialog(this, "Username must follow the pattern: ^[a-zA-Z]+@[0-9]+$", "Invalid Username", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }while(!Utilities.validateUsername(new_val));
+
+                        if(new_val != null && up_get_id != null){
+                            if(changeStringData(new_val,up_get_id,3)){
+                                    JOptionPane.showMessageDialog(this, "Change Successfully", "Username", JOptionPane.INFORMATION_MESSAGE);
+                            }
                         }
                     }
                     break;
                 case 4:
                     up_get_id = get_TableRecordID(usersTable);
-                    do{
-                        new_val = JOptionPane.showInputDialog(this, "Enter new password for user "+up_get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
-                    }while(!Utilities.validatePassword(new_val, this));
-                    
-                    String confirmPass = null;
-                    
-                    if(new_val != null){
+                    if(evt.getClickCount() == 2){
                         do{
-                            confirmPass = JOptionPane.showInputDialog(this, "Confirm new password for user "+up_get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
-                        }while(!Utilities.validatePassword(confirmPass, this));
-                    }
+                            new_val = JOptionPane.showInputDialog(this, "Enter new password for user "+up_get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
+                        }while(!Utilities.validatePassword(new_val, this));
 
-                    if(new_val != null && confirmPass != null && up_get_id != null){
-                        if(confirmPass.equals(new_val)){
-                            if(changeStringData(confirmPass,up_get_id,4)){
-                                JOptionPane.showMessageDialog(this, "Change Successfully", "Password", JOptionPane.INFORMATION_MESSAGE);
+                        String confirmPass = null;
+
+                        if(new_val != null){
+                            do{
+                                confirmPass = JOptionPane.showInputDialog(this, "Confirm new password for user "+up_get_id+":", "Change Password", JOptionPane.QUESTION_MESSAGE);
+                            }while(!Utilities.validatePassword(confirmPass, this));
+                        }
+
+                        if(new_val != null && confirmPass != null && up_get_id != null){
+                            if(confirmPass.equals(new_val)){
+                                if(changeStringData(confirmPass,up_get_id,4)){
+                                    JOptionPane.showMessageDialog(this, "Change Successfully", "Password", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Password mismatch", "Error", JOptionPane.ERROR_MESSAGE);
                             }
-                        }else{
-                            JOptionPane.showMessageDialog(null, "Password mismatch", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                     break;
                 case 5:
                     up_get_id = get_TableRecordID(usersTable);
+                    if(evt.getClickCount() == 2){
+                        SpinnerDateModel dateModel = new SpinnerDateModel();
+                        JSpinner spinner = new JSpinner(dateModel);
+                        spinner.setEditor(new JSpinner.DateEditor(spinner, Helper.dateFormat));
 
-                    SpinnerDateModel dateModel = new SpinnerDateModel();
-                    JSpinner spinner = new JSpinner(dateModel);
-                    spinner.setEditor(new JSpinner.DateEditor(spinner, Helper.dateFormat));
+                        String message = "Please enter a date in the format "+Helper.dateFormat;
+                        int option = JOptionPane.showOptionDialog(
+                            this,
+                            new Object[]{message, spinner},
+                            "Select new birth date",
+                            JOptionPane.OK_CANCEL_OPTION,
+                            JOptionPane.INFORMATION_MESSAGE,
+                            null,
+                            new Object[]{"OK", "Cancel"},
+                            "OK");
 
-                    String message = "Please enter a date in the format "+Helper.dateFormat;
-                    int option = JOptionPane.showOptionDialog(
-                        this,
-                        new Object[]{message, spinner},
-                        "Select new birth date",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.INFORMATION_MESSAGE,
-                        null,
-                        new Object[]{"OK", "Cancel"},
-                        "OK");
-
-                    if (option == JOptionPane.OK_OPTION) {
-                        Date selectedDate = (Date) spinner.getValue();
-                        if (selectedDate != null && up_get_id != null) {
-                            SimpleDateFormat dateFormat = new SimpleDateFormat(Helper.dateFormat);
-                            if(changeStringData(dateFormat.format(selectedDate),up_get_id,5)){
-                                JOptionPane.showMessageDialog(this, "Change Successfully", "Birth date", JOptionPane.INFORMATION_MESSAGE);
+                        if (option == JOptionPane.OK_OPTION) {
+                            Date selectedDate = (Date) spinner.getValue();
+                            if (selectedDate != null && up_get_id != null) {
+                                SimpleDateFormat dateFormat = new SimpleDateFormat(Helper.dateFormat);
+                                if(changeStringData(dateFormat.format(selectedDate),up_get_id,5)){
+                                    JOptionPane.showMessageDialog(this, "Change Successfully", "Birth date", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(this, "No date selected");
                             }
-                        } else {
-                            JOptionPane.showMessageDialog(this, "No date selected");
                         }
                     }
                     break;
                 case 6:
                     up_get_id = get_TableRecordID(usersTable);
-                    new_val = (String) JOptionPane.showInputDialog(
-                        this,
-                        "Choose new gender for user " + up_get_id + ":",
-                        "Change Gender",
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        Helper.listOfGender,
-                        Helper.listOfGender[0]);
+                    if(evt.getClickCount() == 2){
+                        new_val = (String) JOptionPane.showInputDialog(
+                            this,
+                            "Choose new gender for user " + up_get_id + ":",
+                            "Change Gender",
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            Helper.listOfGender,
+                            Helper.listOfGender[0]);
 
-                    if(new_val != null && up_get_id != null){
-                        if(changeStringData(new_val,up_get_id,6)){
-                            JOptionPane.showMessageDialog(this, "Change Successfully", "Gender", JOptionPane.INFORMATION_MESSAGE);
+                        if(new_val != null && up_get_id != null){
+                            if(changeStringData(new_val,up_get_id,6)){
+                                JOptionPane.showMessageDialog(this, "Change Successfully", "Gender", JOptionPane.INFORMATION_MESSAGE);
+                            }
                         }
                     }
                     break;
@@ -2596,16 +2668,10 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                 default:
                     break;
             }
-            try {
-                AppManagement.tableData(usersTable,userManagement.table,userManagement.columns);
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch(NullPointerException e){
-        
-        } 
+            AppManagement.tableData(usersTable,userManagement.table,userManagement.columns);
+        } catch(NullPointerException e){} 
         catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_usersTableMouseClicked
 
@@ -2678,7 +2744,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                                 clearAddUserInputs();
                                 adminGetImageBtn.setEnabled(true);
                                 
-                                Utilities.generateQRCodeImage(generate_id, get_fname.replaceAll(" ", "_")+"QRCode.png", get_fname.toUpperCase(),350, 350,this);
+                                Utilities.generateQRCodeImage(generate_id, get_fname.replaceAll(" ", "_")+"QRCode.png",350, 350,this);
                             }else{
                                 JOptionPane.showMessageDialog(this, "Username must follow the pattern: ^[a-zA-Z]+@[0-9]+$", "Invalid Username", JOptionPane.ERROR_MESSAGE);
                             }
@@ -2690,7 +2756,11 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
                     JOptionPane.showMessageDialog(this, "The passwords do not match.", "Password Error", JOptionPane.ERROR_MESSAGE);
                 }
             }catch (SQLException e) {
-                JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                if (e.getErrorCode() == 1062) { 
+                    JOptionPane.showMessageDialog(this, "User already exists.", "Duplicate Entry", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }//GEN-LAST:event_addUserBtnActionPerformed
@@ -2761,17 +2831,41 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             }
         }
     }//GEN-LAST:event_adminGetImageBtnActionPerformed
-      
+    
+    SpinnerDateModel dateModel = new SpinnerDateModel();
+    JSpinner inventorySpinner = new JSpinner(dateModel);
+                        
     private void inventoryTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inventoryTableMouseClicked
+        int getSelectedRow = inventoryTable.getSelectedRow();
+        int getSelectedColumn = inventoryTable.getSelectedColumn();
+        
+        inventorySpinner.setEditor(new JSpinner.DateEditor(inventorySpinner, Helper.dateFormat));
         int getItem_id = Integer.parseInt(inventoryTable.getValueAt(inventoryTable.getSelectedRow(), 0).toString());
         String getItem = inventoryTable.getValueAt(inventoryTable.getSelectedRow(), 2).toString();
         
         try {
             setImageToPictureBox(inventoryImgDisplay,inventoryManagement.getItemImage(getItem_id));
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }
         
+        if(getSelectedColumn == 6){
+            String message = "Please enter a date in the format "+Helper.dateFormat;
+            int option = JOptionPane.showOptionDialog(
+                                this,
+                                new Object[]{message, inventorySpinner},
+                                "Select new date",
+                                JOptionPane.OK_CANCEL_OPTION,
+                                JOptionPane.INFORMATION_MESSAGE,
+                                null,
+                                new Object[]{"OK", "Cancel"},
+                                "OK");
+            
+            if(option == JOptionPane.YES_OPTION){
+                String get_dateVal = inventorySpinner.getValue().toString();
+                System.out.println(get_dateVal);
+            }
+        }
         jLabel35.setText("Selected Product: "+getItem);
     }//GEN-LAST:event_inventoryTableMouseClicked
 
@@ -2780,7 +2874,9 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     }//GEN-LAST:event_editVariantBtnActionPerformed
 
     private void testbtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testbtn1ActionPerformed
+        File get_testFile = getFile_Image(FileManagement.IMAGE_EXTENSIONS[0]);
        
+        System.out.println(get_testFile.getName());
     }//GEN-LAST:event_testbtn1ActionPerformed
 
     private void adminShowCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminShowCActionPerformed
@@ -2792,18 +2888,93 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
             adminPasswordInput1.setEchoChar('*');
         }
     }//GEN-LAST:event_adminShowCActionPerformed
+
+    private void inventoryImgDisplayMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inventoryImgDisplayMouseClicked
+        if(evt.isControlDown()){
+            if(evt.getClickCount() == 2){
+                openImageDesktop(inventoryImgDisplay.getImage());
+            }
+        }
+    }//GEN-LAST:event_inventoryImgDisplayMouseClicked
+
+    private void changeProfileBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeProfileBtnActionPerformed
+        try {
+            String get_id = AppManagement.getCurrentUser(this);
+            String get_image = userManagement.getImagePath(get_id);   
+            File get_new_image = getFile_Image(FileManagement.IMAGE_EXTENSIONS[1]);
+
+            if(get_new_image != null){
+                int userInput = JOptionPane.showConfirmDialog(
+                    this,
+                                "Are you sure you want to change your profile picture?",
+                                "Change Confirmation",
+                                JOptionPane.YES_NO_OPTION
+                            );      
+                if(!get_new_image.getName().equals("nullProfile.jpg")){
+                    if(!get_image.equals("nullProfile.jpg")){
+                        insert_Image(get_new_image,get_image.replaceAll(".jpg", ""),this,0);
+
+                        ImageIcon temp_profile = new ImageIcon(get_new_image.getAbsolutePath());
+                        imageAvatar1.setIcon(temp_profile);
+                        imageAvatar1.repaint();
+                    }else{
+                        String get_fname = userManagement.getFName(get_id);
+                        String cur_date = Utilities.getCurrentDate(Helper.dateFormat);
+
+                        String image_name = cur_date+"_"+get_fname;
+                        image_name = checkDuplicateImageName(image_name+"."+FileManagement.IMAGE_EXTENSIONS[1]);
+
+                        userManagement.updateStringData(image_name+"."+FileManagement.IMAGE_EXTENSIONS[1],get_id, 7);
+
+                        insert_Image(get_new_image,image_name,this,0);
+
+                        ImageIcon temp_profile = new ImageIcon(get_new_image.getAbsolutePath());
+                        imageAvatar1.setIcon(temp_profile);
+                        imageAvatar1.repaint();
+                    }
+                }else{
+                    userManagement.updateStringData("nullProfile.jpg",get_id, 7);
+                    ImageIcon temp_profile = new ImageIcon(get_new_image.getAbsolutePath());
+                    imageAvatar1.setIcon(temp_profile);
+                    imageAvatar1.repaint();
+                    
+                    if(!get_image.equals("nullProfile.jpg")){
+                        deleteImage(get_image);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_changeProfileBtnActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        int getSelectedRow = inventoryTable.getSelectedRow();
+        int getSelectedColumn = inventoryTable.getSelectedColumn();
+        
+        String get_val = null;
+        
+        if(getSelectedColumn != 1){
+            get_val = Utilities.getSpinnerFromTable(inventoryTable);
+        }else{
+            get_val = Utilities.getComboxFromTable(inventoryTable, 1);
+        }
+        
+        System.out.println("Value at "+get_val);
+    }//GEN-LAST:event_jButton8ActionPerformed
     
     private boolean changeStringData(String newVal, Object id,int column_index){
         try{
             userManagement.updateStringData(newVal, id,column_index);
             return true;
         }catch(SQLException e){
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error Code#: "+e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }
         return false;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable CategoryTable;
     private javax.swing.JButton addUserBtn;
     private javax.swing.JButton addVariantBtn;
     private com.toedter.calendar.JDateChooser adminBdayInput;
@@ -2822,6 +2993,7 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private javax.swing.JLabel backLabel;
     private customComponents.ButtonRound categoryBtn;
     private customComponents.PanelRound categoryPanel;
+    private customComponents.ButtonRound changeProfileBtn;
     private javax.swing.JLayeredPane contentLayere;
     private customComponents.PanelRound d1;
     private customComponents.PanelRound d2;
@@ -2887,7 +3059,6 @@ public final class MainApp extends javax.swing.JFrame implements AppInitializers
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSpinner jSpinner4;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;

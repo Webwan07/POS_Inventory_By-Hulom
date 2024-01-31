@@ -26,7 +26,8 @@ public class Helper {
                                                 new Color(112, 2, 2),     // 8
                                                 new Color(96, 0, 0)       // 9
                                             };
-
+    
+    public static char currency = '₱';
     public static Color[] fontColors = new Color[]{new Color(255,255,255)};
     public static String[] listOfGender = {"Male","Female"};
     public static String dateFormat = "yyyy-MM-dd";

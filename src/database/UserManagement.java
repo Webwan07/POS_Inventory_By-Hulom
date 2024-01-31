@@ -48,9 +48,7 @@ public class UserManagement extends DbConnection{
                 JOptionPane.showMessageDialog(component, "No records found in the table.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
-        } finally {
+        }finally {
             prepare.close();
             result.close();
         }
@@ -68,8 +66,6 @@ public class UserManagement extends DbConnection{
             if (result.next()) {
                 return true;
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -95,9 +91,7 @@ public class UserManagement extends DbConnection{
                     return 3; 
                 }
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
-        } catch(ArrayIndexOutOfBoundsException e){
+        }catch(ArrayIndexOutOfBoundsException e){
             JOptionPane.showMessageDialog(component, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
@@ -119,10 +113,7 @@ public class UserManagement extends DbConnection{
             } else {
                 return 0; 
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
-            return -1; 
-        } finally {
+        }finally {
             prepare.close();
             result.close();
         }
@@ -141,8 +132,6 @@ public class UserManagement extends DbConnection{
             if(result.next()){
                 return result.getString(columns[0]);
             }
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -160,8 +149,6 @@ public class UserManagement extends DbConnection{
             if(result.next()){
                 return result.getString(columns[7]);
             }
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -178,8 +165,6 @@ public class UserManagement extends DbConnection{
             if(result.next()){
                 return result.getString(columns[1]);
             }
-        }catch(SQLException e){
-           JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -198,8 +183,6 @@ public class UserManagement extends DbConnection{
             if(result.next()){
                 return result.getString(columns[2]);
             }
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -217,14 +200,12 @@ public class UserManagement extends DbConnection{
             if(result.next()){
                 return result.getString(columns[3]);
             }
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
         }
         return null;        
-    }    
+    } 
     
     public String getGender(String _id) throws SQLException{
         String query = "SELECT "+columns[6]+" FROM "+table+" WHERE "
@@ -236,8 +217,6 @@ public class UserManagement extends DbConnection{
             if(result.next()){
                 return result.getString(columns[6]);
             }
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -255,8 +234,6 @@ public class UserManagement extends DbConnection{
             if(result.next()){
                 return result.getString(columns[8]);
             }
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -271,8 +248,6 @@ public class UserManagement extends DbConnection{
             prepare.setString(1, newVal);
             prepare.setObject(2, id);
             prepare.executeUpdate();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
         }
@@ -294,12 +269,6 @@ public class UserManagement extends DbConnection{
             prepare.setString(9,user_type);
             
             prepare.executeUpdate();
-        } catch(SQLException e) {
-            if (e.getErrorCode() == 1062) { 
-                JOptionPane.showMessageDialog(component, "User already exists.", "Duplicate Entry", JOptionPane.ERROR_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
-            }
         }finally{
             prepare.close();
         }     
@@ -311,8 +280,6 @@ public class UserManagement extends DbConnection{
             prepare = connection.prepareStatement(query);
             prepare.setObject(1, ID);
             prepare.executeUpdate();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
         }
@@ -329,8 +296,6 @@ public class UserManagement extends DbConnection{
             if (result.next()) {
                 userCount = result.getInt(1);
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();

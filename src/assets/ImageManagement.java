@@ -3,12 +3,14 @@ package assets;
 import customComponents.ImageAvatar;
 import customComponents.PictureBox;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -84,6 +86,19 @@ public interface ImageManagement {
             return newImageName;
         }
 
-        return imageName; // If directory is empty or doesn't exist
+        return imageName;
+    }
+    
+    public default void openImageDesktop(Icon getImage){
+        String imagePath = getImage.toString();
+        
+        try {
+            File imageFile = new File(imagePath);
+            if (imageFile.exists() && (imageFile.isFile() || imageFile.canRead())) {
+                Desktop.getDesktop().open(imageFile);
+            } 
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }   
     }
 }

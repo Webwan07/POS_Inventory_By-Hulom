@@ -12,9 +12,9 @@ import javax.swing.JOptionPane;
 
 @Author("Josuan Leonardo Hulom")
 public class InventoryManagement{
-    public final String table = "inventorytable";
+    public final static String table = "inventorytable";
     
-    public final String[] columns = {"productID","Category","ProductName",
+    public final static String[] columns = {"productID","Category","ProductName",
         "Description","Quantity","RetailPrice","DateOfPurchase","itemImage"};
     
     public final String[] listOfUserType = {"Admin","Seller"};
@@ -35,8 +35,6 @@ public class InventoryManagement{
             if(result.next()){
                 return new ImageIcon(FileManagement.PROJECT_PACKAGES[1]+"/"+result.getString(columns[7])+".png");
             }
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(component, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();            

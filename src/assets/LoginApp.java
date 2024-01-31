@@ -39,7 +39,7 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
         this.setIconImage(appIcon);
         
         initComponents();
-        Utilities.backLabelActions(jLabel2, Helper.colors[6],Helper.fontColors[0],Helper.colors[3],Helper.fontColors[0]);
+        Utilities.backLabelActions(jLabel2, Helper.colors[6],Helper.fontColors[0],Helper.colors[7],Helper.fontColors[0]);
     }
 
     @SuppressWarnings("unchecked")
@@ -52,9 +52,10 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
         usernameTextField = new customComponents.TextField();
         passwordField = new customComponents.PasswordField();
         loginBtn = new customComponents.ButtonRound();
-        panelRound2 = new customComponents.PanelRound();
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        panelRound2 = new customComponents.PanelRound();
+        pictureBox1 = new customComponents.PictureBox();
+        jLabel1 = new javax.swing.JLabel();
         panel2 = new javax.swing.JPanel();
         camscreen = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -118,6 +119,17 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
             }
         });
 
+        jLabel2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/qr-code.png"))); // NOI18N
+        jLabel2.setText("Log in using QR code");
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelRound1Layout = new javax.swing.GroupLayout(panelRound1);
         panelRound1.setLayout(panelRound1Layout);
         panelRound1Layout.setHorizontalGroup(
@@ -134,6 +146,10 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
                             .addComponent(usernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addGroup(panelRound1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         panelRound1Layout.setVerticalGroup(
             panelRound1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,28 +160,37 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
                 .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(54, 54, 54)
                 .addComponent(loginBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         panelRound2.setBackground(new java.awt.Color(176, 62, 62));
         panelRound2.setRoundBottomRight(25);
         panelRound2.setRoundTopRight(25);
 
-        jLabel1.setFont(new java.awt.Font("Calibri", 1, 48)); // NOI18N
+        pictureBox1.setToolTipText("(CRMC) College of Computer Studies");
+        pictureBox1.setImage(new javax.swing.ImageIcon(getClass().getResource("/logo/appLogo.png"))); // NOI18N
+        pictureBox1.setOpaque(false);
+
+        javax.swing.GroupLayout pictureBox1Layout = new javax.swing.GroupLayout(pictureBox1);
+        pictureBox1.setLayout(pictureBox1Layout);
+        pictureBox1Layout.setHorizontalGroup(
+            pictureBox1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        pictureBox1Layout.setVerticalGroup(
+            pictureBox1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 151, Short.MAX_VALUE)
+        );
+
+        jLabel1.setFont(new java.awt.Font("Calibri", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/lock.png"))); // NOI18N
         jLabel1.setText("LOG IN");
-
-        jLabel2.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/qr-code.png"))); // NOI18N
-        jLabel2.setText("Log in using QR code");
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel2MouseClicked(evt);
-            }
-        });
+        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jLabel1.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
 
         javax.swing.GroupLayout panelRound2Layout = new javax.swing.GroupLayout(panelRound2);
         panelRound2.setLayout(panelRound2Layout);
@@ -173,21 +198,19 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
             panelRound2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRound2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelRound2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(panelRound2Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 2, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addGroup(panelRound2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pictureBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
+                .addContainerGap(8, Short.MAX_VALUE))
         );
         panelRound2Layout.setVerticalGroup(
             panelRound2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRound2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(73, 73, 73)
+                .addComponent(pictureBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panel1Layout = new javax.swing.GroupLayout(panel1);
@@ -294,25 +317,25 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
         }
     }//GEN-LAST:event_loginBtnActionPerformed
 
-    private Point currentLocation = new Point(112, 295);
+//    private Point currentLocation = new Point(112, 295);
     private void loginBtnMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginBtnMouseEntered
-        String get_username = usernameTextField.getText();
-        char[] get_p = passwordField.getPassword();
-        String get_password = new String(get_p);         
-        
-        boolean emptyUsername = get_username.trim().isEmpty();
-        boolean emptyPassword = get_password.trim().isEmpty();
-        Point newLocation;
-    
-        if (emptyUsername || emptyPassword) {
-            if (currentLocation.equals(new Point(112, 343))) {
-                newLocation = new Point(112, 295);
-            } else {
-                newLocation = new Point(112, 343);
-            }
-            loginBtn.setLocation(newLocation);
-            currentLocation = newLocation;
-        }
+//        String get_username = usernameTextField.getText();
+//        char[] get_p = passwordField.getPassword();
+//        String get_password = new String(get_p);         
+//        
+//        boolean emptyUsername = get_username.trim().isEmpty();
+//        boolean emptyPassword = get_password.trim().isEmpty();
+//        Point newLocation;
+//    
+//        if (emptyUsername || emptyPassword) {
+//            if (currentLocation.equals(new Point(112, 320))) {
+//                newLocation = new Point(112, 295);
+//            } else {
+//                newLocation = new Point(112, 320);
+//            }
+//            loginBtn.setLocation(newLocation);
+//            currentLocation = newLocation;
+//        }
     }//GEN-LAST:event_loginBtnMouseEntered
 
     private void usernameTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameTextFieldKeyReleased
@@ -463,6 +486,7 @@ public class LoginApp extends javax.swing.JFrame implements Runnable,ThreadFacto
     private customComponents.PanelRound panelRound1;
     private customComponents.PanelRound panelRound2;
     private customComponents.PasswordField passwordField;
+    private customComponents.PictureBox pictureBox1;
     private customComponents.TextField usernameTextField;
     // End of variables declaration//GEN-END:variables
 }

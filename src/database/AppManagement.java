@@ -32,8 +32,6 @@ public class AppManagement extends DbConnection{
                 }
                 model.addRow(row);
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(table, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -53,8 +51,6 @@ public class AppManagement extends DbConnection{
             
             prepare.close();
             result.close();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(p_c, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
             result.close();  
@@ -70,8 +66,6 @@ public class AppManagement extends DbConnection{
             prepare.setString(1, _id);
             
             prepare.executeUpdate();
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(p_c, e.getMessage(), "Error Code: " + e.getErrorCode(), JOptionPane.ERROR_MESSAGE);
         }finally{
             prepare.close();
         }

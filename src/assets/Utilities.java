@@ -9,12 +9,17 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.toedter.calendar.JDateChooser;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -31,11 +36,21 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
+import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.text.DefaultFormatter;
 
 @Author("Josuan Leonardo Hulom")
 public class Utilities {
@@ -240,8 +255,19 @@ public class Utilities {
         return now.format(formatter);
     }
     
+    private static BufferedImage makeRoundedCorner(BufferedImage image, int cornerRadius) {
+        BufferedImage roundedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = roundedImage.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(Color.WHITE);
+        g2.fill(new RoundRectangle2D.Float(0, 0, image.getWidth(), image.getHeight(), cornerRadius, cornerRadius));
+        g2.setComposite(AlphaComposite.SrcAtop);
+        g2.drawImage(image, 0, 0, null);
+        g2.dispose();
+        return roundedImage;
+    }
     
-    public static void generateQRCodeImage(String text, String fileName, String watermark, int width, int height, Component parent_component) {
+    public static void generateQRCodeImage(String text, String fileName, int width, int height, Component parent_component) {
         try {
             Map<EncodeHintType, Object> hintMap = new HashMap<>();
             hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
@@ -256,19 +282,18 @@ public class Utilities {
             }
             String filePath = downloadFolder + "\\" + fileName;
 
-            int onColor = 0xFFC04D4D; 
-            int offColor = 0xFFFFFFFF; 
+            int onColor = 0xFFC04D4D;
+            
+            int offColor = 0xFFF5CDCD;
+            
+            //White Background
+            //int offColor = 0xFFFFFFFF;
             MatrixToImageConfig config = new MatrixToImageConfig(onColor, offColor);
 
             Path path = FileSystems.getDefault().getPath(filePath);
             BufferedImage image = MatrixToImageWriter.toBufferedImage(bitMatrix, config);
-            
-            Graphics2D g2d = image.createGraphics();
-            g2d.setColor(Color.BLACK);
-            g2d.setFont(new Font("Calibri", Font.BOLD, 16));
-            int watermarkWidth = g2d.getFontMetrics().stringWidth(watermark);
-            g2d.drawString(watermark, (image.getWidth() - watermarkWidth) / 2, image.getHeight() - 10);
-            g2d.dispose();
+
+            image = makeRoundedCorner(image, 25);
 
             ImageIO.write(image, "PNG", path.toFile());
 
@@ -279,4 +304,118 @@ public class Utilities {
             JOptionPane.showMessageDialog(parent_component, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    public static String getSpinnerFromTable(javax.swing.JTable table){
+        int editedRow = table.getEditingRow();
+        int editedColumn = table.getEditingColumn();
+        
+        table.editCellAt(table.getSelectedRow(), table.getSelectedColumn());
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        
+        String editedValue = null;
+        
+        if (editedRow != -1 && editedColumn != -1) {
+            TableCellEditor editor = table.getCellEditor(editedRow, editedColumn);
+            if (editor != null) {
+                editor.stopCellEditing();
+            }
+            editedValue = model.getValueAt(editedRow, editedColumn).toString();
+        }
+        
+        return editedValue;
+    }
+    
+    public static String getComboxFromTable(JTable table, int colIdx) {
+        int row = table.getSelectedRow();
+        TableCellEditor editor = table.getCellEditor(row, colIdx);    
+        if (editor instanceof DefaultCellEditor) {
+            Component editorComponent = ((DefaultCellEditor) editor).getComponent();
+            if (editorComponent instanceof JComboBox) {
+                JComboBox<?> comboBox = (JComboBox<?>) editorComponent;
+                Object selectedItem = comboBox.getSelectedItem();
+                if (selectedItem != null) {
+                    return selectedItem.toString();
+                }
+            }
+        }
+        return ""; 
+    }
+    
+    public static class IntCustomJSpinner extends DefaultCellEditor {
+
+        private JSpinner input;
+
+        public IntCustomJSpinner() {
+            super(new JCheckBox());
+            input = new JSpinner();
+            SpinnerNumberModel numberModel = (SpinnerNumberModel) input.getModel();
+            numberModel.setMinimum(0);
+            JSpinner.NumberEditor editor = (JSpinner.NumberEditor) input.getEditor();
+            DefaultFormatter formatter = (DefaultFormatter) editor.getTextField().getFormatter();
+            formatter.setCommitsOnValidEdit(true);
+            editor.getTextField().setHorizontalAlignment(SwingConstants.CENTER);
+
+            editor.getTextField().addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyTyped(KeyEvent e) {
+                    char c = e.getKeyChar();
+                    if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                        e.consume();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            super.getTableCellEditorComponent(table, value, isSelected, row, column);
+            int qty = Integer.parseInt(value.toString());
+            input.setValue(qty);
+            return input;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return input.getValue();
+        }
+    }
+    
+    public static class DoubleCustomJSpinner extends DefaultCellEditor {
+
+        private JSpinner input;
+
+        public DoubleCustomJSpinner() {
+            super(new JCheckBox());
+            input = new JSpinner();
+            SpinnerNumberModel numberModel = new SpinnerNumberModel(1.0, 0.0, Double.MAX_VALUE, 0.1); // Allow float values
+            input.setModel(numberModel);
+            JSpinner.NumberEditor editor = (JSpinner.NumberEditor) input.getEditor();
+            DefaultFormatter formatter = (DefaultFormatter) editor.getTextField().getFormatter();
+            formatter.setCommitsOnValidEdit(true);
+            editor.getTextField().setHorizontalAlignment(SwingConstants.CENTER);
+
+            editor.getTextField().addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyTyped(KeyEvent e) {
+                    char c = e.getKeyChar();
+                    if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE && c != '.' && c != '-') {
+                        e.consume();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            super.getTableCellEditorComponent(table, value, isSelected, row, column);
+            float qty = Float.parseFloat(value.toString());
+            input.setValue(qty);
+            return input;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return input.getValue();
+        }
+    } 
 }
